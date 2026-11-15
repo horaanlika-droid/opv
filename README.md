@@ -38,7 +38,7 @@
 - [x] Кунжа — Salvelinus leucomaenis; `assets/illustrations/kunja-01.png`
 - [x] Галец — вероятно опечатка «голец»; рабочая атрибуция: сахалинская мальма (Salvelinus malma), уточнить у автора; `assets/illustrations/galets-01.png`
 - [x] Горбуша — Oncorhynchus gorbuscha; `assets/illustrations/gorbusha-01.png`
-- [ ] Кета
+- [x] Кета — Oncorhynchus keta, океаническая серебристая форма; `assets/illustrations/keta-01.png` (сверено по фото WDFW: https://wdfw.wa.gov/species-habitats/species/oncorhynchus-keta)
 - [ ] Кижуч
 - [ ] Хариус
 - [ ] Краб
