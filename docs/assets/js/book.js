@@ -895,15 +895,39 @@
     }, 1700);
   }
 
+  /**
+   * Туман исчезает, как только сцена готова. Медленная сеть — не повод
+   * держать читателя: если через 2,5 секунды картинки ещё идут, туман уходит
+   * сам, а остров дорисовывается уже в титуле.
+   */
+  function veilOnSceneReady() {
+    if (!els.veil || reduceMotion.matches) return;
+    var started = Date.now();
+    var release = function () {
+      var wait = Math.max(0, 900 - (Date.now() - started));
+      setTimeout(endVeil, wait);
+    };
+    var stage = doc.getElementById('front-stage');
+    var img = stage && stage.querySelector('img');
+    if (img && !img.complete) {
+      img.addEventListener('load', release, { once: true });
+      img.addEventListener('error', release, { once: true });
+    } else {
+      release();
+    }
+  }
+
   function setupVeil() {
     if (reduceMotion.matches) {
       if (els.veil) els.veil.remove();
       doc.body.classList.remove('is-opening');
       return;
     }
+    veilOnSceneReady();
     var visited = false;
     try { visited = sessionStorage.getItem('opv_visited') === '1'; } catch (e) { visited = false; }
 
+    // Верхняя граница, даже если картинка так и не пришла.
     var delay = visited ? (CONFIG.veilRepeat || 1100) : (CONFIG.veilMax || 5200);
     var timer = setTimeout(endVeil, delay);
 
