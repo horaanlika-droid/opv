@@ -4,55 +4,329 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Остров. Продукт. Вкус — Егор Тарасенко</title>
-  <meta name="description" content="Сахалинская кухня через локальный продукт и историю. Рабочая книга Егора Тарасенко.">
+  <meta name="description" content="Цифровая книга о новой сахалинской кухне: остров, море, лес, дичь. Текст, иллюстрации и звук.">
+  <meta name="theme-color" content="#efe8d6">
   <meta property="og:title" content="Остров. Продукт. Вкус">
   <meta property="og:type" content="book">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%9F%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/css/site.css">
+  <meta property="og:description" content="Цифровая книга о новой сахалинской кухне. Остров, море, лес, дичь.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23efe8d6'/%3E%3Cpath d='M34 6c6 6 4 14 8 20 3 5 2 12-3 18-5 7-4 12-1 14-8 1-14-6-13-14 1-9 8-12 7-20-1-7-4-10 2-18z' fill='%23223134'/%3E%3C/svg%3E">
+
+  <link rel="preload" href="assets/fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Пояса сцены грузятся в фоне и не задерживают первый экран. -->
+  <link rel="preload" href="assets/art/band-mountains.webp" as="image">
+  <link rel="prefetch" href="assets/art/band-forest.webp" as="image">
+  <link rel="prefetch" href="assets/art/band-river.webp" as="image">
+  <link rel="prefetch" href="assets/art/band-coast.webp" as="image">
+  <link rel="prefetch" href="assets/art/band-sea.webp" as="image">
+  <link rel="prefetch" href="assets/art/band-depth.webp" as="image">
+  <link rel="stylesheet" href="assets/css/book.css">
 </head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="#cover">Остров<span class="brand-dot"> · </span>Продукт<span class="brand-dot"> · </span>Вкус</a>
-    <button class="toc-toggle" id="toc-toggle" aria-expanded="false" aria-controls="toc">Содержание</button>
-  </header>
+<body class="is-opening">
 
-  <div class="layout">
-    <aside class="toc" id="toc" aria-label="Содержание книги">
-      <p class="toc-title">Содержание</p>
-      <nav id="toc-nav">
-        <a class="toc-cover" href="#cover">Титул</a>
-      </nav>
-      <p class="toc-foot" id="toc-foot"></p>
-    </aside>
-    <div class="toc-backdrop" id="toc-backdrop" hidden></div>
-
-    <main class="content" id="content">
-      <section class="cover" id="cover">
-        <p class="cover-kicker" id="cover-kicker"></p>
-        <h1 class="cover-title" id="cover-title">Остров. Продукт. Вкус</h1>
-        <p class="cover-author" id="cover-author"></p>
-        <blockquote class="cover-note" id="cover-note"></blockquote>
-        <a class="cover-cta" id="cover-cta" href="#filosofiya">Начать читать →</a>
-        <div class="cover-status" id="cover-status" role="status">Загружаю книгу…</div>
-      </section>
-      <div id="chapters"></div>
-    </main>
+  <!-- Прелоадинг: туман над островом. Не задерживает чтение: сцена уходит
+       по кнопке, по Esc, по любому переходу и сама через несколько секунд. -->
+  <div class="veil" id="veil" aria-hidden="true">
+    <div class="veil__paper"></div>
+    <div class="veil__island"><img src="assets/art/island-poster.webp" alt="" width="1240" height="1460" decoding="async"></div>
+    <div class="veil__fog veil__fog--far"></div>
+    <div class="veil__fog veil__fog--mid"></div>
+    <div class="veil__fog veil__fog--near"></div>
+    <div class="veil__titles">
+      <p class="veil__kicker">Егор Тарасенко</p>
+      <p class="veil__title">Остров<br>Продукт<br>Вкус</p>
+      <p class="veil__sub">Сахалинская кухня через локальный продукт и историю</p>
+    </div>
+    <button class="veil__skip" id="veil-skip" type="button">Войти в книгу</button>
   </div>
 
-  <footer class="footer">
-    <div class="footer-inner">
-      <span id="footer-line"></span>
-      <span class="footer-links">
+  <a class="skip-link" href="#scene">Перейти к острову</a>
+
+  <!-- Постоянная панель: оглавление, поиск, календарь, звук. -->
+  <header class="bar" id="bar">
+    <a class="bar__mark" href="#top" aria-label="Остров. Продукт. Вкус — в начало">
+      <span class="bar__mark-1">Остров</span><span class="bar__mark-dot">·</span><span class="bar__mark-2">Продукт</span><span class="bar__mark-dot">·</span><span class="bar__mark-3">Вкус</span>
+    </a>
+    <nav class="bar__tools" aria-label="Инструменты книги">
+      <button class="tool" id="btn-contents" type="button" aria-expanded="false" aria-controls="contents" aria-label="Оглавление">
+        <span class="tool__ico" aria-hidden="true">☰</span><span class="tool__txt">Оглавление</span>
+      </button>
+      <button class="tool" id="btn-find" type="button" aria-expanded="false" aria-controls="find" aria-label="Найти продукт">
+        <span class="tool__ico" aria-hidden="true">⌕</span><span class="tool__txt">Найти продукт</span>
+      </button>
+      <button class="tool" id="btn-season" type="button" aria-expanded="false" aria-controls="season" aria-label="Сезонный календарь">
+        <span class="tool__ico" aria-hidden="true">◔</span><span class="tool__txt">Сезон</span>
+      </button>
+      <button class="tool tool--sound" id="btn-sound" type="button" aria-pressed="false" title="Звук природы">
+        <span class="tool__ico" aria-hidden="true">◍</span><span class="tool__txt" id="sound-label">Звук выкл.</span>
+      </button>
+      <label class="vol" id="sound-vol" hidden>
+        <span class="visually-hidden">Громкость природного звука</span>
+        <input class="vol__range" id="volume" type="range" min="0" max="100" step="5" value="55">
+      </label>
+    </nav>
+  </header>
+
+  <!-- Оглавление: компактное, в начале страницы и в постоянной панели. -->
+  <div class="panel" id="contents" hidden>
+    <div class="panel__inner" role="dialog" aria-modal="false" aria-labelledby="contents-title">
+      <div class="panel__head">
+        <h2 class="panel__title" id="contents-title">Оглавление</h2>
+        <button class="panel__close" type="button" data-close aria-label="Закрыть оглавление">×</button>
+      </div>
+      <div class="panel__body" id="contents-body">
+        <p class="panel__hint">
+          Четыре раздела книги. Внутри — главы в авторском порядке.
+          Знак «↗» отмечает главы с практической частью.
+        </p>
+        <div class="contents" id="contents-list"></div>
+        <div class="panel__foot">
+          <a class="panel__link" href="#scene">Остров в разрезе</a>
+          <a class="panel__link" href="#seasons">Сезонный календарь</a>
+          <a class="panel__link" href="admin/">Редакция</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel--find" id="find" hidden>
+    <div class="panel__inner" role="dialog" aria-modal="false" aria-labelledby="find-title">
+      <div class="panel__head">
+        <h2 class="panel__title" id="find-title">Найти продукт</h2>
+        <button class="panel__close" type="button" data-close aria-label="Закрыть поиск">×</button>
+      </div>
+      <div class="panel__body">
+        <label class="field">
+          <span class="field__label">Название или местное имя</span>
+          <input class="field__input" id="find-input" type="search" placeholder="корюшка, папоротник, ёж…" autocomplete="off">
+        </label>
+        <div class="filters" id="find-filters">
+          <div class="filters__row">
+            <span class="filters__label">Раздел</span>
+            <div class="chips" id="find-groups" role="group" aria-label="Разделы книги"></div>
+          </div>
+          <div class="filters__row">
+            <span class="filters__label">Среда</span>
+            <div class="chips" id="find-envs" role="group" aria-label="Природная среда"></div>
+          </div>
+          <div class="filters__row">
+            <span class="filters__label">Категория</span>
+            <div class="chips" id="find-cats" role="group" aria-label="Категория продукта"></div>
+          </div>
+          <div class="filters__row">
+            <span class="filters__label">Сезон</span>
+            <div class="chips" id="find-seasons" role="group" aria-label="Сезон"></div>
+          </div>
+          <button class="filters__reset" type="button" id="find-reset" hidden>Сбросить фильтры</button>
+        </div>
+        <p class="panel__hint" id="find-count"></p>
+        <ul class="results" id="find-results"></ul>
+        <p class="panel__note">
+          Все найденные продукты открываются в своей главе книги. Фильтры показывают только то, что
+          действительно сказано в рукописи: если у продукта не указан район или сезон, он не попадёт
+          в соответствующий отбор — и это честнее, чем подставить догадку.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel--season" id="season" hidden>
+    <div class="panel__inner" role="dialog" aria-modal="false" aria-labelledby="season-title">
+      <div class="panel__head">
+        <h2 class="panel__title" id="season-title">Сезонный календарь</h2>
+        <button class="panel__close" type="button" data-close aria-label="Закрыть календарь">×</button>
+      </div>
+      <div class="panel__body">
+        <p class="panel__hint">
+          Показаны только те сезонные ориентиры, которые есть в рукописи. Природный сезон,
+          сезон промысла и наличие на рынке — разные вещи, и рукопись пока различает их не везде.
+        </p>
+        <div class="cal" id="season-cal"></div>
+        <p class="panel__note">
+          Сроки зависят от района, вида, погоды и ежегодных правил. Перед поездкой или покупкой проверяйте
+          действующие нормы: Сахалино-Курильское управление Росрыболовства, Минлесхоз и Агентство
+          лесного и охотничьего хозяйства Сахалинской области.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="top">
+    <!-- Титул: туман, остров и вход в книгу. -->
+    <section class="front" id="front" aria-label="Титул">
+      <div class="front__stage" id="front-stage">
+        <div class="front__island">
+          <img class="front__img" src="assets/art/island-poster.webp" alt="Сахалин: береговая линия острова в акварельной манере, положение относительно материка и Хоккайдо" width="1240" height="1460">
+        </div>
+        <div class="front__fog front__fog--1" data-fog="1"></div>
+        <div class="front__fog front__fog--2" data-fog="2"></div>
+      </div>
+      <div class="front__copy">
+        <p class="front__eyebrow">Егор Тарасенко · 2026</p>
+        <h1 class="front__title"><span>Остров</span><span>Продукт</span><span>Вкус</span></h1>
+        <p class="front__sub">Сахалинская кухня через локальный продукт и историю</p>
+        <div class="front__acts">
+          <a class="btn btn--solid" href="#scene" data-enter>Войти в книгу</a>
+          <button class="btn btn--quiet" type="button" data-open="contents">Оглавление</button>
+        </div>
+      </div>
+      <p class="front__scroll" aria-hidden="true">листайте вниз</p>
+    </section>
+
+    <!-- Центральная сцена: пять природных уровней внутри главы «Остров». -->
+    <section class="scene" id="scene" aria-label="Сахалин в разрезе: пять природных уровней">
+      <div class="scene__sticky">
+        <div class="scene__layers" aria-hidden="true">
+          <div class="layer layer--sky"></div>
+          <div class="layer layer--mountain" data-depth="0.14"><img src="assets/art/band-mountains.webp" alt="" loading="lazy" decoding="async"></div>
+          <div class="layer layer--forest" data-depth="0.30"><img src="assets/art/band-forest.webp" alt="" loading="lazy" decoding="async"></div>
+          <div class="layer layer--river" data-depth="0.46"><img src="assets/art/band-river.webp" alt="" loading="lazy" decoding="async"></div>
+          <div class="layer layer--coast" data-depth="0.62"><img src="assets/art/band-coast.webp" alt="" loading="lazy" decoding="async"></div>
+          <div class="layer layer--sea" data-depth="0.76"><img src="assets/art/band-sea.webp" alt="" loading="lazy" decoding="async"></div>
+          <div class="layer layer--depth" data-depth="0.90"><img src="assets/art/band-depth.webp" alt="" loading="lazy" decoding="async"></div>
+          <div class="scene__wash" aria-hidden="true"></div>
+        </div>
+
+        <div class="scene__text" id="scene-text">
+          <article class="level" data-level="1">
+            <p class="level__num">I</p>
+            <h2 class="level__title">Горы и сопки</h2>
+            <p class="level__body">Почти по всей длине остров держат два хребта — Западно-Сахалинские горы и Восточно-Сахалинские, где поднимается Лопатина, 1609 метров. Между ними лежит Тымь-Поронайская низменность. Здесь начинается разговор о географии, климате и о том, как остров устроен.</p>
+            <a class="level__go" href="#ostrov">Открыть главу об острове</a>
+          </article>
+          <article class="level" data-level="2">
+            <p class="level__num">II</p>
+            <h2 class="level__title">Лес</h2>
+            <p class="level__body">Тёмнохвойная тайга из ели аянской и пихты сахалинской, пояс каменной берёзы, под ним — курильский бамбучник и папоротники. Ниже — то, за чем в лес идут: черемша, папоротник, ягоды. Лес отдаёт только то, что готов отдать.</p>
+            <a class="level__go" href="#les">Читать раздел «Лес»</a>
+          </article>
+          <article class="level" data-level="3">
+            <p class="level__num">III</p>
+            <h2 class="level__title">Реки и долины</h2>
+            <p class="level__body">Поронай и Тымь — две главные реки острова, 350 и 330 километров. В реки заходит рыба, у рек стоят поселения, в долинах — болота, озёра и луга. Вода здесь — не фон, а дорога и календарь.</p>
+            <a class="level__go" href="#more">К продуктам рек</a>
+          </article>
+          <article class="level" data-level="4">
+            <p class="level__num">IV</p>
+            <h2 class="level__title">Побережье</h2>
+            <p class="level__body">Берег — место встречи суши и моря, где прилив и отлив задают ритм. Галька, камни, плавник, водоросли, прибой. Отсюда начинается промысел — и отсюда же видно, насколько остров мал и насколько открыт.</p>
+            <a class="level__go" href="#more">К продуктам побережья</a>
+          </article>
+          <article class="level" data-level="5">
+            <p class="level__num">V</p>
+            <h2 class="level__title">Море</h2>
+            <p class="level__body">Путешествие заканчивается под водой. Гребешок, трепанг, морской ёж, мидии, ламинария — здесь начинается раздел «Море», с которого книга переходит к продуктам.</p>
+            <a class="level__go" href="#more">Читать раздел «Море»</a>
+          </article>
+        </div>
+
+        <div class="scene__dots" id="scene-dots" role="tablist" aria-label="Природные уровни"></div>
+      </div>
+    </section>
+
+    <!-- Раздел «Остров»: пролог и вступительные главы. -->
+    <section class="part" id="ostrov" data-part="ostrov">
+      <header class="part__head">
+        <p class="part__kicker">Раздел первый</p>
+        <h2 class="part__title">Остров</h2>
+        <p class="part__lead">Пролог: география, природа, история, климат, люди и культура Сахалина.</p>
+      </header>
+      <div class="chapters" id="chapters-ostrov"></div>
+    </section>
+
+    <section class="part" id="more" data-part="more">
+      <header class="part__head">
+        <p class="part__kicker">Раздел второй</p>
+        <h2 class="part__title">Море</h2>
+        <p class="part__lead">Продукты моря и истории, связанные с ними.</p>
+      </header>
+      <div class="chapters" id="chapters-more"></div>
+    </section>
+
+    <section class="part" id="les" data-part="les">
+      <header class="part__head">
+        <p class="part__kicker">Раздел третий</p>
+        <h2 class="part__title">Лес</h2>
+        <p class="part__lead">Дикоросы, папоротники, травы и ягоды.</p>
+      </header>
+      <div class="chapters" id="chapters-les"></div>
+    </section>
+
+    <section class="part" id="dich" data-part="dich">
+      <header class="part__head">
+        <p class="part__kicker">Раздел четвёртый</p>
+        <h2 class="part__title">Дичь</h2>
+        <p class="part__lead">Мясо, животные и дикая птица — с оговорками о законности и виде.</p>
+      </header>
+      <div class="chapters" id="chapters-dich"></div>
+    </section>
+
+    <section class="part part--reference" id="seasons">
+      <header class="part__head">
+        <p class="part__kicker">Справочное</p>
+        <h2 class="part__title">Сезонный календарь</h2>
+      </header>
+      <div class="reference" id="reference-season"></div>
+      <div class="chapters" id="chapters-season-map"></div>
+    </section>
+
+    <section class="part part--reference" id="sources">
+      <header class="part__head">
+        <p class="part__kicker">Справочное</p>
+        <h2 class="part__title">Источники и редакционные пометки</h2>
+      </header>
+      <div class="chapters" id="chapters-sources"></div>
+    </section>
+  </main>
+
+  <footer class="foot" id="foot">
+    <div class="foot__inner">
+      <p class="foot__line" id="foot-line"></p>
+      <p class="foot__note">
+        Книга открыта для чтения. Маркеры в квадратных скобках — редакционные пометки, они остаются
+        видимыми до авторской сверки: это честнее, чем выдавать черновик за готовый текст.
+      </p>
+      <p class="foot__links">
         <a href="admin/">Редакция</a>
-      </span>
+        <span data-donate hidden><a id="donate-link" href="#" rel="noopener">Поддержать книгу</a></span>
+      </p>
     </div>
   </footer>
 
+  <!-- «Заметка шефа»: практическая часть продукта. Открывается отдельно,
+       чтобы не прерывать повествование главы. -->
+  <div class="sheet" id="note" hidden>
+    <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="note-title" id="note-panel" tabindex="-1">
+      <div class="sheet__head">
+        <p class="sheet__kicker" id="note-kicker">Заметка шефа</p>
+        <button class="sheet__close" type="button" data-note-close aria-label="Закрыть заметку">×</button>
+      </div>
+      <div class="sheet__scroll" id="note-scroll">
+        <h2 class="sheet__title" id="note-title"></h2>
+        <p class="sheet__lead" id="note-lead"></p>
+        <nav class="sheet__toc" id="note-toc" aria-label="Разделы заметки"></nav>
+        <div class="sheet__body" id="note-body"></div>
+        <div class="sheet__pending" id="note-pending" hidden></div>
+        <div class="sheet__foot">
+          <a class="sheet__back" href="#" id="note-back">← Вернуться к главе</a>
+          <span class="sheet__state" id="note-state"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="live" id="live" role="status" aria-live="polite"></div>
+
   <noscript>
-    <div class="noscript">Для чтения книги нужен JavaScript. Откройте страницу в современном браузере.</div>
+    <div class="noscript">Для чтения книги нужен JavaScript. Текст также доступен в файле MANUSCRIPT.md в репозитории.</div>
   </noscript>
 
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/chapter-split.js"></script>
   <script src="assets/js/markdown.js"></script>
-  <script src="assets/js/site.js"></script>
+  <script src="assets/js/audio.js"></script>
+  <script src="assets/js/book.js"></script>
 </body>
 </html>
