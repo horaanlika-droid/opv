@@ -72,7 +72,7 @@
 
 ## Сайт книги и админ-панель
 
-Книга публикуется как статический сайт на GitHub Pages из папки `docs/`.
+Книга публикуется как статический сайт на GitHub Pages из папки `docs/` (ветка `main`, папка `/docs`, сборка «Deploy from a branch»). Включение: **Settings → Pages → Source: Deploy from a branch → Branch: `main`, folder `/docs` → Save**; через минуту сайт доступен по адресу ниже.
 
 - Сайт: https://horaanlika-droid.github.io/opv/
 - Админка: https://horaanlika-droid.github.io/opv/admin/?pass=opv2026
