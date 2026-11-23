@@ -2120,8 +2120,24 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
     mix-blend-mode: multiply;
     opacity: .96;
   }
-  .teaser--lead .teaser__link { padding-bottom: 92px; }
-  .teaser--lead .teaser__art img { max-height: 108px; }
+  .teaser--lead .teaser__link { padding-bottom: 26px; }
+
+  /* Акварельный разлив вместо иллюстрации: у «Философии» нет видовой
+     таблицы, и подставлять туда рыбу было бы неправдой. */
+  .teaser__wash {
+    position: absolute;
+    right: -30px;
+    bottom: -40px;
+    width: 62%;
+    height: 78%;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 60% at 62% 42%, rgb(150 176 168 / 55%) 0%, rgb(150 176 168 / 0%) 70%),
+      radial-gradient(48% 52% at 30% 68%, rgb(196 178 138 / 62%) 0%, rgb(196 178 138 / 0%) 72%),
+      radial-gradient(40% 44% at 78% 74%, rgb(122 146 152 / 42%) 0%, rgb(122 146 152 / 0%) 74%);
+    filter: blur(2px) saturate(.92);
+    opacity: .9;
+  }
   .teaser--lead .teaser__art { right: -6px; bottom: -4px; width: 52%; }
   .teaser--lead .teaser__text { max-width: 26ch; }
 

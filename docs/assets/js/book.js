@@ -400,27 +400,42 @@
           '<p class="teaser__text">' + esc(shorten(opening.abstract, 150)) + '</p>' +
           '<span class="teaser__go">Читать главу <i aria-hidden="true"></i></span>' +
         '</a>' +
-        // У главы-открытия нет видовой таблицы: там уместна акварель моря и
-        // леса — это и есть предмет «Философии». Силуэт острова вытянут
-        // в высоту (Сахалин такой и есть) и в карточку не ложится.
-        '<div class="teaser__art"><img src="assets/illustrations/morskaya-kapusta-01.webp"' +
-          ' alt="" loading="lazy" decoding="async"></div>';
+        // У главы-открытия нет видовой таблицы — и подставлять чужую рыбу
+        // нельзя. Вместо иллюстрации здесь акварельный разлив (CSS): он
+        // ничего не изображает и ничего не выдумывает.
+        '<div class="teaser__wash" aria-hidden="true"></div>';
       leadHost.hidden = false;
     }
 
-    // Два продукта: с иллюстрациями, первыми в разделе «Море» — это те, что
-    // уже нарисованы; остальные появятся сами, когда получат иллюстрацию.
-    var picks = PARTS[1].chapters
-      .map(function (id) { return state.chapters[id]; })
-      .filter(function (ch) { return ch && ch.illustration; })
-      .slice(0, 2);
+    // Два продукта из разных разделов: так карточки показывают диапазон книги,
+    // а не две соседние рыбы. Берём первые главы с готовой видовой таблицей —
+    // когда появятся новые иллюстрации, выбор обновится сам.
+    var picks = [];
+    ['more', 'les', 'dich'].forEach(function (partId) {
+      var part = PARTS.filter(function (p) { return p.id === partId; })[0];
+      if (!part) return;
+      var first = part.chapters
+        .map(function (id) { return state.chapters[id]; })
+        .filter(function (ch) { return ch && ch.illustration; })[0];
+      if (first) picks.push(first);
+    });
+    // Если готовых таблиц меньше двух (иллюстрации ещё рисуются), добираем
+    // из «Моря» — но никогда не показываем одну и ту же главу дважды.
+    if (picks.length < 2) {
+      PARTS[1].chapters.forEach(function (id) {
+        if (picks.length >= 2) return;
+        var ch = state.chapters[id];
+        if (ch && ch.illustration && picks.indexOf(ch) < 0) picks.push(ch);
+      });
+    }
+    picks = picks.slice(0, 2);
 
     prodHost.innerHTML = picks.map(function (ch) {
       return '<article class="teaser teaser--product">' +
         '<a class="teaser__link" href="#' + esc(ch.id) + '">' +
           '<div class="teaser__art"><img src="assets/illustrations/' + esc(ch.illustration) +
             '" alt="" loading="lazy" decoding="async"></div>' +
-          '<p class="teaser__kicker">Продукт</p>' +
+          '<p class="teaser__kicker">' + esc(partTitleFor(ch.id)) + ' · продукт</p>' +
           '<h3 class="teaser__title">' + esc(ch.title) + '</h3>' +
           '<p class="teaser__text">' + esc(shorten(ch.abstract, 90)) + '</p>' +
           '<span class="teaser__go">Читать историю <i aria-hidden="true"></i></span>' +
