@@ -549,3 +549,160 @@ a { color: var(--accent-deep); }
   .chapter { break-inside: avoid-page; border-top: 1px solid #ccc; }
   .cover { min-height: auto; }
 }
+/* Contemporary editorial art direction: Sakhalin landscape, field notes, and clarity — no borrowed Indigenous motifs. */
+:root {
+  --paper: #f5f4ef;
+  --paper-deep: #e9e8e1;
+  --ink: #172b30;
+  --ink-soft: #40545a;
+  --muted: #758387;
+  --rule: #d3d9d5;
+  --accent: #b76f45;
+  --accent-deep: #8b4e2e;
+  --note: #78432c;
+  --marker: #f0e1d3;
+  --topbar-h: 68px;
+  --toc-w: 272px;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Inter, "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  font-size: 17px;
+  line-height: 1.72;
+}
+
+::selection { color: #fff; background: #37616a; }
+a { color: #37616a; }
+a:focus-visible, button:focus-visible { outline: 3px solid #bd744a; outline-offset: 3px; }
+
+.topbar {
+  padding-inline: clamp(20px, 5vw, 72px);
+  background: rgb(245 244 239 / 92%);
+  border-color: #dce0dc;
+}
+.brand { font-size: 12px; letter-spacing: .19em; }
+.toc-toggle { border-radius: 3px; padding: 8px 15px; }
+
+.layout {
+  max-width: 1480px;
+  grid-template-columns: var(--toc-w) minmax(0, 1fr);
+  gap: clamp(36px, 7vw, 112px);
+  padding-inline: clamp(20px, 6vw, 88px);
+}
+.toc { border-right: 0; padding-top: 38px; }
+.toc-title { letter-spacing: .2em; }
+.toc a { border-radius: 2px; padding-block: 9px; }
+.toc a.active { box-shadow: inset 2px 0 var(--accent); background: #e9ece8; }
+
+.cover {
+  position: relative;
+  min-height: min(850px, calc(100vh - var(--topbar-h)));
+  justify-content: center;
+  padding: clamp(70px, 12vh, 140px) 0;
+  isolation: isolate;
+}
+.cover::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 9% -12% 10% 31%;
+  background: linear-gradient(145deg, #dbe5e2, #e7e4d8 72%, #d7e0dc);
+  clip-path: polygon(20% 0, 100% 0, 100% 81%, 72% 100%, 0 87%, 9% 37%);
+  opacity: .78;
+}
+.cover::after {
+  content: "САХАЛИН  ·  ТИХИЙ ОКЕАН";
+  position: absolute;
+  right: 2%;
+  bottom: 12%;
+  color: #496269;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .22em;
+  writing-mode: vertical-rl;
+}
+.cover-kicker {
+  margin-bottom: 34px;
+  color: var(--accent-deep);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .22em;
+}
+.cover-title {
+  max-width: 10ch;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(56px, 9.2vw, 126px);
+  font-weight: 500;
+  letter-spacing: -.065em;
+  line-height: .91;
+  text-transform: none;
+}
+.cover-author { margin-top: 36px; font-size: 15px; font-weight: 600; letter-spacing: .04em; }
+.cover-note {
+  max-width: 52ch;
+  margin-top: 30px;
+  padding: 0 0 0 18px;
+  background: none;
+  border-left: 1px solid var(--accent);
+  color: var(--ink-soft);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+}
+.cover-cta {
+  border-radius: 2px;
+  background: var(--ink);
+  padding: 15px 23px;
+  font-size: 11px;
+  letter-spacing: .17em;
+}
+.cover-cta:hover { background: #37616a; }
+
+.chapter { padding: 86px 0 64px; border-color: var(--rule); }
+.chapter-num { color: var(--accent-deep); font-size: 10px; letter-spacing: .2em; }
+.chapter h2 {
+  max-width: 15ch;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(42px, 5.4vw, 72px);
+  font-weight: 500;
+  letter-spacing: -.045em;
+  line-height: 1;
+  text-transform: none;
+}
+.chapter-illus { max-width: 540px; margin: 42px 0 12px; }
+.chapter-illus img { mix-blend-mode: multiply; }
+.chapter-illus figcaption { font-family: inherit; font-style: normal; font-size: 11px; letter-spacing: .06em; }
+.chapter-body { max-width: 66ch; margin-top: 32px; line-height: 1.78; }
+.chapter-body h3 { color: #27464c; font-family: Georgia, "Times New Roman", serif; font-size: clamp(24px, 2.4vw, 32px); font-weight: 500; letter-spacing: -.025em; }
+.chapter-body blockquote { border-color: var(--accent); }
+.chapter-body table { background: #fbfbf8; }
+.table-wrap { border-radius: 2px; }
+.pager { border-color: var(--rule); margin-top: 60px; }
+.pager .dir { color: var(--accent-deep); font-size: 10px; letter-spacing: .18em; }
+.footer { background: #e8ebe6; border-color: #d3d9d5; }
+.footer-inner { max-width: 1480px; padding-inline: clamp(20px, 6vw, 88px); }
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .toc { background: var(--paper); }
+  .cover { min-height: 75vh; padding-block: 80px 90px; }
+  .cover::before { inset: 13% -7% 11% 12%; }
+  .cover::after { right: 0; bottom: 9%; }
+  .chapter { padding-top: 60px; }
+}
+@media (max-width: 560px) {
+  .topbar { height: 60px; }
+  :root { --topbar-h: 60px; }
+  .cover { min-height: 70vh; }
+  .cover::before { inset: 15% -10% 13% 4%; }
+  .cover-title { font-size: clamp(54px, 16vw, 82px); }
+  .cover-note { max-width: 37ch; font-size: 15px; }
+  .chapter { padding-block: 48px 38px; }
+  .chapter h2 { font-size: clamp(38px, 11vw, 56px); }
+  .footer-inner { padding-block: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
