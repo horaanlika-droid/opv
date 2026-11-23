@@ -55,17 +55,17 @@
 - [x] Галец — вероятно опечатка «голец»; рабочая атрибуция: сахалинская мальма (Salvelinus malma), уточнить у автора; `assets/illustrations/galets-01.png`
 - [x] Горбуша — Oncorhynchus gorbuscha; `assets/illustrations/gorbusha-01.png`
 - [x] Кета — Oncorhynchus keta, океаническая серебристая форма; `assets/illustrations/keta-01.png` (сверено по фото WDFW: https://wdfw.wa.gov/species-habitats/species/oncorhynchus-keta)
-- [ ] Кижуч
-- [ ] Хариус
-- [ ] Краб
-- [ ] Креветка
-- [ ] Морской ёж
-- [ ] Гребешок
-- [ ] Трепанг
-- [ ] Спизула
-- [ ] Карбикула
+- [x] Кижуч — Oncorhynchus kisutch, морская серебристая форма; `assets/illustrations/kizhuch-01.png`
+- [x] Хариус — Thymallus, высокий парусообразный спинной плавник; вид требует авторского уточнения; `assets/illustrations/harius-01.png`
+- [x] Краб — Paralithodes camtschaticus, вид сверху; `assets/illustrations/krab-01.png`
+- [x] Креветка — Pandalus borealis; `assets/illustrations/krevetka-01.png`
+- [x] Морской ёж — Strongylocentrotus intermedius; `assets/illustrations/morskoy-ezh-01.png`
+- [x] Гребешок — Mizuhopecten yessoensis, створка; `assets/illustrations/grebeshok-01.png`
+- [x] Трепанг — Apostichopus japonicus; `assets/illustrations/trepang-01.png`
+- [x] Спизула — Spisula sachalinensis, створка; `assets/illustrations/spizula-01.png`
+- [x] Карбикула — Corbicula japonica, створка; `assets/illustrations/karbikula-01.png`
 - [ ] [Название уточнить — позиция на странице 108]
-- [ ] Морская капуста
+- [ ] Морская капуста — ламинария, слоевище
 - [ ] Ракушка
 - [ ] Папоротники: орляк и осмунд
 - [ ] Лапух
