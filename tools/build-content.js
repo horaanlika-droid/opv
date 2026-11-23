@@ -43,6 +43,16 @@ const ILLUSTRATION_BY_CHAPTER = {
   'Галец': 'galets-01.png',
   'Горбуша': 'gorbusha-01.png',
   'Кета': 'keta-01.png',
+  'Кижуч': 'kizhuch-01.png',
+  'Хариус': 'harius-01.png',
+  'Краб': 'krab-01.png',
+  'Креветка': 'krevetka-01.png',
+  'Морской ёж': 'morskoy-ezh-01.png',
+  'Гребешок': 'grebeshok-01.png',
+  'Трепанг': 'trepang-01.png',
+  'Спизула': 'spizula-01.png',
+  'Карбикула': 'karbikula-01.png',
+  'Морская капуста': 'morskaya-kapusta-01.png',
 };
 
 const TRANSLIT = {
