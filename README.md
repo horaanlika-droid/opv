@@ -4,7 +4,15 @@
 
 ## Публикация на GitHub Pages
 
-Сайт публикуется автоматически из `docs/` через GitHub Actions workflow `.github/workflows/pages.yml` при каждом push в `main` (или вручную через `workflow_dispatch`). Чтобы включить публикацию, один раз выберите в репозитории **Settings → Pages → Build and deployment → Source: GitHub Actions**. Далее сборка и выкладка описаны в коде; выбирать ветку и папку `docs` в настройках Pages не нужно. Исходный `README.md` остаётся страницей репозитория и не выводится на сайт.
+Книга публикуется из `docs/` одним workflow — `.github/workflows/pages.yml`. Он собирает контент, прогоняет тесты и выкладывает `docs/` как артефакт Pages. Если сборка или тесты падают, публикации не будет.
+
+**Один раз в настройках:** репозиторий → **Settings → Pages → Build and deployment → Source: `GitHub Actions`**.
+
+Важно не выбирать «Deploy from a branch»: книга лежит не в корне, и в этом режиме GitHub отдаёт `README.md` вместо сайта. На случай, если режим всё же останется «ветка / (root)», в корне лежит `index.html`-переадресация в `docs/`.
+
+Адрес сайта: https://horaanlika-droid.github.io/opv/
+
+Если сайт не обновился: вкладка **Actions → Deploy book to Pages** покажет, на каком шаге остановилось. Частая причина — в репозитории остался второй workflow, который забирает ту же группу `pages`; в этом репозитории он удалён.
 
 ## Цель
 
@@ -92,6 +100,20 @@
 5. Таксономические пометки `[1]` не попадают в карточки поиска, район продукта указывается только там, где он назван в тексте главы.
 
 Практическая часть в данных лежит рядом с полным текстом: `chapter.story`, `chapter.practical`, `chapter.recipeState` (`awaiting-author` | `blocked` | `ready` | `none`). Если файл контента отредактирован через админку и этих полей в нём нет, книга делит главу в браузере тем же правилом.
+
+## Шрифты
+
+Гарнитуры — Cormorant Garamond (заголовки), Spectral (текст), Inter (интерфейс), лицензия SIL OFL (`docs/assets/fonts/OFL-*.txt`).
+
+Fontsource режет шрифты по подмножествам: латиница, кириллица, latin-ext отдельно. Если взять один файл, в книге не будет либо кириллицы, либо цифр и латинских названий видов — и текст начнёт набираться двумя гарнитурами вперемешку. Поэтому `tools/build-fonts.py` склеивает `latin + cyrillic` в один woff2 на начертание и выбрасывает ненужные хвосты (вьетнамский, греческий).
+
+```bash
+pip install --break-system-packages fonttools brotli
+npm install --no-save --prefix /tmp/fonts @fontsource/cormorant-garamond @fontsource/spectral @fontsource/inter
+python3 tools/build-fonts.py
+```
+
+Итог: 11 начертаний, ~217 КБ, полный набор (кириллица, латиница, цифры, «ёлочки», тире, стрелки).
 
 ## Звук
 

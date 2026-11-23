@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Остров. Продукт. Вкус</title>
+
+  <!--
+    Эта страница нужна только для режима Pages «Deploy from a branch → / (root)»:
+    в корне репозитория нет книги, она лежит в docs/. Без этого файла GitHub
+    Pages отдаёт README.md репозитория, и кажется, что сайт не работает.
+
+    Когда в настройках выбран источник «GitHub Actions», публикуется содержимое
+    docs/ напрямую и эта страница в выкладку не попадает.
+  -->
+  <link rel="canonical" href="./docs/">
+  <meta http-equiv="refresh" content="0; url=./docs/">
+  <meta name="robots" content="noindex">
+  <style>
+    html, body { margin: 0; height: 100%; }
+    body {
+      display: grid;
+      place-items: center;
+      background: #efe8d6;
+      color: #223134;
+      font: 16px/1.6 Georgia, "Times New Roman", serif;
+      text-align: center;
+      padding: 24px;
+    }
+    a { color: #23424a; }
+    .k { font: 11px/1.6 system-ui, sans-serif; letter-spacing: .28em; text-transform: uppercase; color: #6d6f66; margin-bottom: 18px; }
+  </style>
+</head>
+<body>
+  <div>
+    <p class="k">Открываем книгу</p>
+    <p>Если переход не начался, <a href="./docs/">откройте книгу вручную</a>.</p>
+  </div>
+  <script>location.replace('./docs/');</script>
+</body>
+</html>

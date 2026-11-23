@@ -4,13 +4,29 @@
    акварельные разливы, сдержанная композиция. Никакой «пластиковой» графики.
    ========================================================================== */
 
+/*
+ * Шрифты — официальные подмножества Cormorant Garamond, Spectral и Inter
+ * (SIL OFL, см. OFL-*.txt), склеенные в один файл на начертание.
+ *
+ * Важно: в исходных файлах, которые лежали здесь раньше, была кириллица,
+ * но не было цифр, латиницы и типографских знаков — книга набиралась
+ * вперемешку двумя гарнитурами. Теперь каждый файл несёт полный набор:
+ * кириллица, латиница (латинские названия видов), цифры, «ёлочки», тире.
+ */
+
+@font-face {
+  font-family: "Cormorant";
+  src: url("../fonts/cormorant-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
   font-family: "Cormorant";
   src: url("../fonts/cormorant-500.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E, U+00AB, U+00BB, U+2013-2014, U+2018-201D, U+2026, U+2116;
 }
 @font-face {
   font-family: "Cormorant";
@@ -18,7 +34,6 @@
   font-weight: 600;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E, U+00AB, U+00BB, U+2013-2014, U+2018-201D, U+2026, U+2116;
 }
 @font-face {
   font-family: "Cormorant";
@@ -26,23 +41,6 @@
   font-weight: 500;
   font-style: italic;
   font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E;
-}
-@font-face {
-  font-family: "Spectral";
-  src: url("../fonts/spectral-400.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E, U+00AB, U+00BB, U+2013-2014, U+2018-201D, U+2026, U+2116;
-}
-@font-face {
-  font-family: "Spectral";
-  src: url("../fonts/spectral-400-italic.woff2") format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E;
 }
 @font-face {
   font-family: "Spectral";
@@ -50,7 +48,20 @@
   font-weight: 300;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E;
+}
+@font-face {
+  font-family: "Spectral";
+  src: url("../fonts/spectral-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Spectral";
+  src: url("../fonts/spectral-400-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
 }
 @font-face {
   font-family: "Inter";
@@ -58,7 +69,6 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E;
 }
 @font-face {
   font-family: "Inter";
@@ -66,7 +76,6 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E;
 }
 @font-face {
   font-family: "Inter";
@@ -74,7 +83,6 @@
   font-weight: 600;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E;
 }
 @font-face {
   font-family: "Inter";
@@ -82,7 +90,6 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0400-04FF, U+0020-007E;
 }
 
 /* ——— Токены ——— */
@@ -110,7 +117,9 @@
 
   --bar-h: 60px;
   --gutter: clamp(20px, 5vw, 76px);
-  --measure: 34em;
+  /* 30em (≈ 660 px) — строка книги на ~68–72 знака: строка не «расползается»,
+     но и не рвётся на каждой фразе. */
+  --measure: 30em;
   --ease: cubic-bezier(.22, .61, .36, 1);
 }
 
@@ -374,7 +383,31 @@ body.is-opening { overflow: hidden; }
 }
 .tool:hover { color: var(--ink); border-bottom-color: var(--ink-soft); }
 .tool[aria-expanded="true"] { color: var(--ink); border-bottom-color: var(--clay); }
-.tool__ico { font-size: 14px; line-height: 1; opacity: .8; }
+.tool__ico {
+  position: relative;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  flex: none;
+  opacity: .78;
+  /* Иконки нарисованы линиями: не зависят от того, есть ли символ в шрифте. */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 15px 15px;
+}
+.tool__ico[data-ico="contents"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23223134' stroke-width='1.2'%3E%3Cpath d='M2 4h12M2 8h12M2 12h8'/%3E%3C/svg%3E");
+}
+.tool__ico[data-ico="find"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23223134' stroke-width='1.2'%3E%3Ccircle cx='7' cy='7' r='4.2'/%3E%3Cpath d='M10.2 10.2 14 14'/%3E%3C/svg%3E");
+}
+.tool__ico[data-ico="season"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23223134' stroke-width='1.2'%3E%3Ccircle cx='8' cy='8' r='5.4'/%3E%3Cpath d='M8 2.6v10.8'/%3E%3Cpath d='M8 8h5.4' opacity='.45'/%3E%3C/svg%3E");
+}
+.tool__ico[data-ico="sound"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23223134' stroke-width='1.2'%3E%3Cpath d='M3 6.2h2.4L8.6 3.4v9.2L5.4 9.8H3z'/%3E%3Cpath d='M11 6.1a2.7 2.7 0 0 1 0 3.8'/%3E%3C/svg%3E");
+}
+.tool--sound[aria-pressed="true"] .tool__ico { opacity: 1; }
 .tool--sound[aria-pressed="true"] { color: var(--sea-deep); border-bottom-color: var(--sea); }
 .tool--sound[aria-pressed="true"] .tool__ico { animation: sound-pulse 2.6s ease-in-out infinite; }
 @keyframes sound-pulse { 50% { opacity: .35; } }
@@ -1125,6 +1158,8 @@ body.is-opening { overflow: hidden; }
 }
 
 .chapter__body > p { margin-bottom: 1.05em; }
+/* Первая строка абзаца чуть «подвешена»: книжная мелочь, которая читается как бумага. */
+.chapter__body > p { text-wrap: pretty; }
 .chapter__body:not(.chapter__body--nomark) > p:first-of-type::first-letter {
   font-family: var(--display);
   font-size: 3.1em;

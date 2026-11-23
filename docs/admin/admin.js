@@ -324,7 +324,7 @@
         '<li data-id="' + esc(ch.id) + '" class="' + (ch.id === selectedId ? 'active' : '') + '" title="' + esc(ch.title) + '">' +
         '<span class="n">' + (i + 1) + '</span>' +
         '<span class="t">' + esc(ch.title) + '</span>' +
-        (ch.illustration ? '<span class="has-illus">✎</span>' : '') +
+        (ch.illustration ? '<span class="has-illus" aria-hidden="true">илл.</span>' : '') +
         '</li>';
     });
     ul.innerHTML = html;
@@ -592,7 +592,7 @@
           var canPush = data.permissions && data.permissions.push;
           ghStatus(
             'Репозиторий найден, ветка по умолчанию: ' + data.default_branch +
-            (settings.token ? (canPush ? ', запись разрешена ✓' : ', запись НЕ разрешена ✗') : ' (токен не задан)'),
+            (settings.token ? (canPush ? ', запись разрешена' : ', запись НЕ разрешена') : ' (токен не задан)'),
             canPush || !settings.token ? 'ok' : 'err'
           );
           if (!hadSavedBranch && data.default_branch && $('gh-branch').value === 'main') {
@@ -605,7 +605,7 @@
       .then(function (r) {
         if (r.status === 404) { ghStatus('Файл ещё не найден — при сохранении будет создан.', 'ok'); return; }
         if (!r.ok) return r.json().then(function (d) { throw new Error(d.message || 'HTTP ' + r.status); });
-        ghStatus('Доступ есть, файл на месте ✓', 'ok');
+        ghStatus('Доступ есть, файл на месте.', 'ok');
       })
       .catch(function (err) {
         ghStatus('Ошибка: ' + err.message, 'err');
@@ -672,7 +672,7 @@
       .then(function (data) {
         dirty = false;
         clearDraft();
-        setPill('ok', 'Сохранено ✓');
+        setPill('ok', 'Сохранено');
         var msg = 'Записано в ' + settings.branch + ' · ' + settings.path;
         if (data.commit && data.commit.html_url) {
           msg += ' · коммит: ' + data.commit.sha.slice(0, 7);
