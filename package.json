@@ -4,8 +4,10 @@
   "private": true,
   "description": "Editable source and digital PDF proof for Ostrov. Produkt. Vkus",
   "scripts": {
+    "build:content": "node tools/build-content.js",
     "build:proof": "node layout/build-proof.js",
     "build:book": "node layout/build-book.js",
+    "serve:docs": "python3 -m http.server 8000 --directory docs",
     "test": "node --test"
   },
   "dependencies": {
