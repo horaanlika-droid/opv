@@ -195,6 +195,41 @@
       while (used[id]) id = base + '-' + (n++);
       used[id] = true;
       ch.id = id;
+
+      // Производные поля пересчитываем тем же правилом, что и книга:
+      // иначе после правки текста в редакции на сайте осталось бы старое
+      // деление на повествование и «Заметку шефа».
+      if (window.ChapterSplit) {
+        var split = window.ChapterSplit.splitChapter(ch);
+        if (split.hasPractical && split.practical) {
+          ch.story = split.story;
+          ch.practical = {
+            markdown: split.practical.markdown,
+            sections: split.practical.sections.map(function (sec) {
+              return { heading: sec.heading, group: sec.group, chars: sec.chars, placeholders: sec.placeholders };
+            }),
+            hasRecipe: split.practical.hasRecipe,
+            isBlocked: split.practical.isBlocked,
+            isRecipeDeclined: split.practical.isRecipeDeclined,
+            isEmpty: split.practical.isEmpty,
+            placeholders: split.practical.placeholders,
+          };
+          ch.recipeState = split.practical.isRecipeDeclined
+            ? 'blocked'
+            : (split.practical.sections.some(function (sec) { return sec.group === 'recipe' && sec.chars >= 80; })
+              ? 'ready'
+              : 'awaiting-author');
+        } else {
+          delete ch.story;
+          delete ch.practical;
+          delete ch.recipeState;
+        }
+        ch.serviceNote = split.serviceNote || undefined;
+        if (!ch.serviceNote) delete ch.serviceNote;
+        ch.abstract = window.ChapterSplit.stripMarkers(
+          window.ChapterSplit.proseOf(split.story).replace(/\s+/g, ' ')
+        ).trim().slice(0, 240);
+      }
     });
     return data;
   }
@@ -331,7 +366,20 @@
   function renderPreview() {
     var ch = currentChapter();
     if (!ch) return;
-    $('preview').innerHTML = window.MD.render(ch.markdown);
+    // Превью показывает то же, что читатель увидит в главе: практическая часть
+    // уходит в отдельную заметку и в тексте главы не дублируется.
+    var split = window.ChapterSplit ? window.ChapterSplit.splitChapter(ch) : null;
+    var story = split && split.hasPractical ? split.story : ch.markdown;
+    $('preview').innerHTML = window.MD.render(story);
+    var note = $('preview-note');
+    if (note) {
+      note.hidden = !(split && split.hasPractical);
+      if (split && split.hasPractical) {
+        var sections = split.practical.sections.map(function (s) { return s.heading || 'практика'; });
+        note.textContent = 'В «Заметку шефа» вынесено: ' + sections.join(' · ') +
+          (split.flags.recipeDeclined ? ' · рецепт отклонён редакционно' : '');
+      }
+    }
   }
 
   function selectChapter(id) {
@@ -731,6 +779,7 @@
       $('f-markdown').hidden = previewOn;
       $('preview').hidden = !previewOn;
       if (previewOn) renderPreview();
+      else if ($('preview-note')) $('preview-note').hidden = true;
     });
 
     $('btn-template').addEventListener('click', insertTemplate);

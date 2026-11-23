@@ -1,2 +1,4 @@
 node_modules/
 book-draft.pdf
+tools/vendor/
+.arena/
