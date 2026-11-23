@@ -4,7 +4,15 @@
 
 ## Публикация на GitHub Pages
 
-Сайт публикуется автоматически из `docs/` через GitHub Actions workflow `.github/workflows/pages.yml` при каждом push в `main` (или вручную через `workflow_dispatch`). Чтобы включить публикацию, один раз выберите в репозитории **Settings → Pages → Build and deployment → Source: GitHub Actions**. Далее сборка и выкладка описаны в коде; выбирать ветку и папку `docs` в настройках Pages не нужно. Исходный `README.md` остаётся страницей репозитория и не выводится на сайт.
+Книга публикуется из `docs/` одним workflow — `.github/workflows/pages.yml`. Он собирает контент, прогоняет тесты и выкладывает `docs/` как артефакт Pages. Если сборка или тесты падают, публикации не будет.
+
+**Один раз в настройках:** репозиторий → **Settings → Pages → Build and deployment → Source: `GitHub Actions`**.
+
+Важно не выбирать «Deploy from a branch»: книга лежит не в корне, и в этом режиме GitHub отдаёт `README.md` вместо сайта. На случай, если режим всё же останется «ветка / (root)», в корне лежит `index.html`-переадресация в `docs/`.
+
+Адрес сайта: https://horaanlika-droid.github.io/opv/
+
+Если сайт не обновился: вкладка **Actions → Deploy book to Pages** покажет, на каком шаге остановилось. Частая причина — в репозитории остался второй workflow, который забирает ту же группу `pages`; в этом репозитории он удалён.
 
 ## Цель
 
