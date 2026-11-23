@@ -378,6 +378,101 @@
     });
   }
 
+  /* ——— Карточки-тизеры (телефон) ——— */
+
+  /**
+   * Титул на телефоне показывает не только туман: сразу видно, что внутри —
+   * глава-открытие, два продукта и сезонный календарь. Всё это ссылки в те же
+   * места книги, новых сущностей не появляется.
+   */
+  function renderTeasers() {
+    var leadHost = $('teaser-lead');
+    var prodHost = $('teaser-products');
+    var seasonHost = $('teaser-season');
+    if (!leadHost || !prodHost || !seasonHost) return;
+
+    var opening = state.chapters['filosofiya'];
+    if (opening) {
+      leadHost.innerHTML =
+        '<a class="teaser__link" href="#' + esc(opening.id) + '">' +
+          '<p class="teaser__kicker">С чего начинается</p>' +
+          '<h2 class="teaser__title">' + esc(opening.title) + '</h2>' +
+          '<p class="teaser__text">' + esc(shorten(opening.abstract, 150)) + '</p>' +
+          '<span class="teaser__go">Читать главу <i aria-hidden="true"></i></span>' +
+        '</a>' +
+        // У главы-открытия нет видовой таблицы: там уместна акварель моря и
+        // леса — это и есть предмет «Философии». Силуэт острова вытянут
+        // в высоту (Сахалин такой и есть) и в карточку не ложится.
+        '<div class="teaser__art"><img src="assets/illustrations/morskaya-kapusta-01.webp"' +
+          ' alt="" loading="lazy" decoding="async"></div>';
+      leadHost.hidden = false;
+    }
+
+    // Два продукта: с иллюстрациями, первыми в разделе «Море» — это те, что
+    // уже нарисованы; остальные появятся сами, когда получат иллюстрацию.
+    var picks = PARTS[1].chapters
+      .map(function (id) { return state.chapters[id]; })
+      .filter(function (ch) { return ch && ch.illustration; })
+      .slice(0, 2);
+
+    prodHost.innerHTML = picks.map(function (ch) {
+      return '<article class="teaser teaser--product">' +
+        '<a class="teaser__link" href="#' + esc(ch.id) + '">' +
+          '<div class="teaser__art"><img src="assets/illustrations/' + esc(ch.illustration) +
+            '" alt="" loading="lazy" decoding="async"></div>' +
+          '<p class="teaser__kicker">Продукт</p>' +
+          '<h3 class="teaser__title">' + esc(ch.title) + '</h3>' +
+          '<p class="teaser__text">' + esc(shorten(ch.abstract, 90)) + '</p>' +
+          '<span class="teaser__go">Читать историю <i aria-hidden="true"></i></span>' +
+        '</a>' +
+        (hasNote(ch)
+          ? '<a class="teaser__note" href="#note-' + esc(ch.id) + '" data-note="' + esc(ch.id) + '">' +
+              '<span class="teaser__note-k">Заметка шефа</span>' +
+              '<span class="teaser__note-d">Обработка · Техника · Авторский рецепт</span>' +
+              '<span class="teaser__note-i" aria-hidden="true"></span>' +
+            '</a>'
+          : '') +
+      '</article>';
+    }).join('');
+
+    var count = state.seasons ? state.seasons.blocks.length : 0;
+    seasonHost.innerHTML =
+      '<p class="teaser__kicker">Сезонный календарь</p>' +
+      '<h3 class="teaser__title">Когда и что на Сахалине</h3>' +
+      '<p class="teaser__text">' + (count ? count + ' сезонных периода: природный сезон, сбор и промысел, рынок — без выдуманных дат.' : 'Сезонные ориентиры из рукописи.') + '</p>' +
+      '<span class="teaser__go">Открыть календарь <i aria-hidden="true"></i></span>';
+
+    markActiveTab();
+  }
+
+  function shorten(text, max) {
+    var t = String(text || '').replace(/\s+/g, ' ').trim();
+    if (t.length <= max) return t;
+    return t.slice(0, max).replace(/\s+\S*$/, '') + '…';
+  }
+
+  /** Подсветка активного раздела в нижнем баре. */
+  function markActiveTab() {
+    var tabs = doc.querySelectorAll('#tabbar .tab');
+    if (!tabs.length) return;
+    var active = 'ostrov';
+    var probe = window.innerHeight * 0.45;
+    ['ostrov', 'more', 'les', 'dich'].forEach(function (id) {
+      var el = doc.getElementById(id);
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      if (r.top <= probe && r.bottom > probe) active = id;
+    });
+    tabs.forEach(function (t) {
+      var isOn = t.getAttribute('data-tab') === active;
+      t.classList.toggle('is-on', isOn);
+      if (t.tagName === 'A') {
+        if (isOn) t.setAttribute('aria-current', 'true');
+        else t.removeAttribute('aria-current');
+      }
+    });
+  }
+
   /* ——— «Заметка шефа» ——— */
 
   function sectionTitle(s) {
@@ -853,6 +948,13 @@
       if (y > 140 && y > state.lastScroll + 4) els.bar.classList.add('is-hidden');
       else if (y < state.lastScroll - 4 || y < 140) els.bar.classList.remove('is-hidden');
       state.lastScroll = y;
+
+      if (!markActiveTab.t) {
+        markActiveTab.t = requestAnimationFrame(function () {
+          markActiveTab.t = 0;
+          markActiveTab();
+        });
+      }
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -1027,6 +1129,13 @@
       setPanel(openPanel === 'season' ? null : 'season');
       renderSeason();
     });
+    var tabSeason = $('tab-season');
+    if (tabSeason) {
+      tabSeason.addEventListener('click', function () {
+        setPanel(openPanel === 'season' ? null : 'season');
+        renderSeason();
+      });
+    }
     els.scrim.addEventListener('click', closePanels);
     doc.querySelectorAll('[data-close]').forEach(function (b) {
       b.addEventListener('click', closePanels);
@@ -1159,6 +1268,7 @@
 
         renderContents();
         renderChapters();
+        renderTeasers();
         renderFind();
         renderSeason();
         setupScene();
