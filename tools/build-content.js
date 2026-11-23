@@ -52,6 +52,7 @@ const ILLUSTRATION_BY_CHAPTER = {
   'Трепанг': 'trepang-01.png',
   'Спизула': 'spizula-01.png',
   'Карбикула': 'karbikula-01.png',
+  'Морская капуста': 'morskaya-kapusta-01.png',
 };
 
 const TRANSLIT = {

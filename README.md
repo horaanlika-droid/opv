@@ -65,7 +65,7 @@
 - [x] Спизула — Spisula sachalinensis, створка; `assets/illustrations/spizula-01.png`
 - [x] Карбикула — Corbicula japonica, створка; `assets/illustrations/karbikula-01.png`
 - [ ] [Название уточнить — позиция на странице 108]
-- [ ] Морская капуста — ламинария, слоевище
+- [x] Морская капуста — ламинария, два слоевища со стволиками; `assets/illustrations/morskaya-kapusta-01.png`
 - [ ] Ракушка
 - [ ] Папоротники: орляк и осмунд
 - [ ] Лапух
