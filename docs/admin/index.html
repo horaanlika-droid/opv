@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Редакция — Остров. Продукт. Вкус</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%BC%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- ——— Экран входа ——— -->
+  <div class="lock" id="lock">
+    <form class="lock-card" id="lock-form" autocomplete="on">
+      <p class="lock-kicker">Остров. Продукт. Вкус</p>
+      <h1>Редакция</h1>
+      <p class="lock-hint">
+        Введите пароль. Можно передавать его сразу в адресной строке:
+        <code id="lock-example">…/admin/?pass=…</code>
+      </p>
+      <input type="password" id="lock-pass" placeholder="Пароль" autocomplete="current-password" required>
+      <button type="submit">Войти</button>
+      <p class="lock-error" id="lock-error" hidden></p>
+      <a class="lock-back" href="../">← На сайт</a>
+    </form>
+  </div>
+
+  <!-- ——— Рабочая область ——— -->
+  <div class="app" id="app" hidden>
+    <header class="app-bar">
+      <a class="brand" href="../">Остров. Продукт. Вкус <span>· редакция</span></a>
+      <div class="bar-right">
+        <span class="pill" id="status-pill">Загрузка…</span>
+
+        <details class="gh" id="gh-details">
+          <summary>GitHub</summary>
+          <div class="gh-panel">
+            <p class="gh-note">
+              Сохранение пишет <code>content/book.json</code> в репозиторий через GitHub API.
+              Нужен токен с доступом на запись (<a href="https://github.com/settings/tokens" target="_blank" rel="noopener">создать токен</a>).
+              Токен хранится только в этом браузере.
+            </p>
+            <div class="gh-grid">
+              <label>Владелец <input id="gh-owner" type="text" placeholder="horaanlika-droid" spellcheck="false"></label>
+              <label>Репозиторий <input id="gh-repo" type="text" placeholder="opv" spellcheck="false"></label>
+              <label>Ветка <input id="gh-branch" type="text" placeholder="main" spellcheck="false"></label>
+              <label>Путь к файлу <input id="gh-path" type="text" placeholder="docs/content/book.json" spellcheck="false"></label>
+            </div>
+            <label class="gh-token">Токен <input id="gh-token" type="password" placeholder="ghp_…" autocomplete="off"></label>
+            <div class="gh-actions">
+              <button type="button" id="gh-check" class="ghost">Проверить доступ</button>
+              <button type="button" id="gh-save-settings" class="ghost">Запомнить</button>
+            </div>
+            <p class="gh-status" id="gh-status"></p>
+          </div>
+        </details>
+
+        <a class="ghost" href="../">На сайт</a>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <section class="panel">
+          <h2>Книга</h2>
+          <button type="button" class="wide" id="btn-meta">Метаданные (название, автор…)</button>
+        </section>
+
+        <section class="panel grow">
+          <h2>Главы <span class="count" id="ch-count"></span></h2>
+          <ul class="ch-list" id="ch-list"></ul>
+          <button type="button" class="wide add" id="btn-add">+ Новая глава</button>
+        </section>
+
+        <section class="panel">
+          <h2>Файл</h2>
+          <div class="btn-col">
+            <button type="button" class="primary" id="btn-save">Сохранить в GitHub</button>
+            <button type="button" id="btn-export">Экспорт book.json</button>
+            <button type="button" id="btn-import">Импорт book.json</button>
+            <input type="file" id="import-file" accept="application/json,.json" hidden>
+            <button type="button" class="danger-ghost" id="btn-reset">Сбросить к серверной версии</button>
+          </div>
+        </section>
+      </aside>
+
+      <main class="editor">
+        <!-- Баннер черновика -->
+        <div class="banner" id="draft-banner" hidden>
+          <span id="draft-text"></span>
+          <span class="banner-actions">
+            <button type="button" id="draft-restore">Восстановить</button>
+            <button type="button" class="ghost" id="draft-drop">Удалить</button>
+          </span>
+        </div>
+
+        <!-- Метаданные -->
+        <div class="modal" id="meta-modal" hidden>
+          <div class="modal-card">
+            <h2>Метаданные книги</h2>
+            <label>Название <input id="m-title" type="text"></label>
+            <label>Автор <input id="m-author" type="text"></label>
+            <label>Подзаголовок <input id="m-subtitle" type="text"></label>
+            <label>Слово на титуле <textarea id="m-note" rows="4"></textarea></label>
+            <div class="modal-actions">
+              <button type="button" class="primary" id="meta-apply">Применить</button>
+              <button type="button" class="ghost" id="meta-cancel">Отмена</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-empty" id="editor-empty">
+          <p>Выберите главу слева или создайте новую.</p>
+          <p class="dim" id="empty-hint"></p>
+        </div>
+
+        <div class="editor-body" id="editor" hidden>
+          <div class="editor-head">
+            <label class="title-field">Заголовок главы
+              <input id="f-title" type="text" placeholder="Название главы">
+            </label>
+            <div class="editor-row">
+              <label>Иллюстрация
+                <select id="f-illus"><option value="">— нет —</option></select>
+              </label>
+              <span class="spacer"></span>
+              <button type="button" id="btn-up" title="Переместить выше">↑</button>
+              <button type="button" id="btn-down" title="Переместить ниже">↓</button>
+              <button type="button" class="danger-ghost" id="btn-del">Удалить главу</button>
+            </div>
+          </div>
+
+          <div class="editor-tools">
+            <button type="button" id="btn-preview">Предпросмотр</button>
+            <button type="button" id="btn-template">Вставить шаблон продукта</button>
+            <span class="dim">Markdown: <b>##</b> подзаголовок, <b>**жирный**</b>, <b>&gt;</b> цитата, <b>-</b> список</span>
+          </div>
+
+          <textarea id="f-markdown" placeholder="Текст главы в Markdown…" spellcheck="true"></textarea>
+          <div class="md-preview" id="preview" hidden></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../assets/js/markdown.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
