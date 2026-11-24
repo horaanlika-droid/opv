@@ -68,6 +68,26 @@
     </nav>
   </header>
 
+  <!-- Нижний липкий бар: на телефоне заменяет верхнюю панель. Пять разделов
+       книги и переход к сезонному календарю — как в бумажном указателе. -->
+  <nav class="tabbar" id="tabbar" aria-label="Разделы книги">
+    <a class="tab" href="#ostrov" data-tab="ostrov">
+      <span class="tab__ico" data-ico="ostrov" aria-hidden="true"></span><span class="tab__t">Остров</span>
+    </a>
+    <a class="tab" href="#more" data-tab="more">
+      <span class="tab__ico" data-ico="more" aria-hidden="true"></span><span class="tab__t">Море</span>
+    </a>
+    <a class="tab" href="#les" data-tab="les">
+      <span class="tab__ico" data-ico="les" aria-hidden="true"></span><span class="tab__t">Лес</span>
+    </a>
+    <a class="tab" href="#dich" data-tab="dich">
+      <span class="tab__ico" data-ico="dich" aria-hidden="true"></span><span class="tab__t">Дичь</span>
+    </a>
+    <button class="tab" type="button" id="tab-season" data-tab="season">
+      <span class="tab__ico" data-ico="season" aria-hidden="true"></span><span class="tab__t">Сезон</span>
+    </button>
+  </nav>
+
   <!-- Оглавление: компактное, в начале страницы и в постоянной панели. -->
   <div class="panel" id="contents" hidden>
     <div class="panel__inner" role="dialog" aria-modal="false" aria-labelledby="contents-title">
@@ -174,6 +194,16 @@
         </div>
       </div>
       <p class="front__scroll" aria-hidden="true">листайте вниз</p>
+    </section>
+
+    <!-- Карточки-тизеры: что читателя ждёт внутри. Показываются на телефоне,
+         на десктопе остаётся сцена и текст подряд. -->
+    <section class="teasers" id="teasers" aria-label="Что в книге">
+      <div class="teasers__inner">
+        <article class="teaser teaser--lead" id="teaser-lead"></article>
+        <div class="teasers__row" id="teaser-products"></div>
+        <a class="teaser teaser--season" href="#seasons" id="teaser-season"></a>
+      </div>
     </section>
 
     <!-- Центральная сцена: пять природных уровней внутри главы «Остров». -->
