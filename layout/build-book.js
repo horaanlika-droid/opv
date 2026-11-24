@@ -42,7 +42,7 @@ const PAGE_H = PAGE_W * 1545 / 2000;
 const MARGIN_X = 52;
 const CONTENT_W = PAGE_W - MARGIN_X * 2;
 const COLORS = {
-  paper: '#fbfaf6', ink: '#20201d', muted: '#77766f', line: '#dedbd1',
+  paper: '#f8f3e4', ink: '#20201d', muted: '#77766f', line: '#dedbd1',
   rust: '#94563d', rustPale: '#f6eee8', notePale: '#f5f1e6', noteInk: '#76543d',
   white: '#ffffff',
 };
