@@ -20,13 +20,20 @@ const OUT_DIR = path.join(ROOT, 'docs', 'content');
 const OUT_FILE = path.join(OUT_DIR, 'book.json');
 const ILLUS_SRC = path.join(ROOT, 'assets', 'illustrations');
 const ILLUS_OUT = path.join(ROOT, 'docs', 'assets', 'illustrations');
+const SCENES_SRC = path.join(ROOT, 'assets', 'scenes');
+const SCENES_OUT = path.join(ROOT, 'docs', 'assets', 'scenes');
 
 const { splitChapter, proseOf, substance, stripMarkers } = require('./chapter-split');
 
 const MAX_ILLUS_WIDTH = 1000;
 
 /** Главы, которые не публикуются на сайте (служебные). */
-const SKIP_CHAPTERS = new Set(['Содержание', 'Шаблон продуктовой главы']);
+const SKIP_CHAPTERS = new Set([
+  'Содержание',
+  'Шаблон продуктовой главы',
+  'Как читать этот документ',
+  'Редакторская карта: что ещё нужно сделать',
+]);
 
 /** Соответствие «глава → файл иллюстрации» (исходный PNG). */
 const ILLUSTRATION_BY_CHAPTER = {
@@ -228,6 +235,18 @@ function invertMap(map) {
   return out;
 }
 
+/**
+ * Текст открытия главы — только авторский, из макета мобильной книги
+ * (assets/reference/app-chapter-mockup.png). Ничего не сочиняем: нет авторской
+ * строки — поля остаются пустыми и в макете не показываются.
+ */
+const OPENER_COPY_BY_CHAPTER = {
+  filosofiya: {
+    lead: 'Сахалинская кухня — это не про единственный рецепт, а про людей, море и остров.',
+    quote: 'Здесь пересекаются разные культуры, меняются рецепты, а привычные продукты обретают новый смысл.',
+  },
+};
+
 async function buildIllustrations() {
   let sharp = null;
   try {
@@ -266,6 +285,42 @@ async function buildIllustrations() {
   return outNames;
 }
 
+/**
+ * «Островные сцены» — бытовая хроника и природные зарисовки.
+ * Мастера (assets/scenes/*.png) конвертируются в webp для сайта.
+ * Папка reference/ — исходные листы раскадровки, на сайт не попадают.
+ */
+async function buildScenes() {
+  if (!fs.existsSync(SCENES_SRC)) return;
+  let sharp = null;
+  try {
+    sharp = require('sharp');
+  } catch (err) {
+    console.warn('[сцены] sharp не установлен, копирую PNG как есть:', err.message);
+  }
+  fs.mkdirSync(SCENES_OUT, { recursive: true });
+  for (const name of fs.readdirSync(SCENES_OUT)) {
+    fs.rmSync(path.join(SCENES_OUT, name), { force: true });
+  }
+  const files = fs.readdirSync(SCENES_SRC).filter((f) => f.toLowerCase().endsWith('.png')).sort();
+  for (const file of files) {
+    const base = file.replace(/\.png$/i, '');
+    const src = path.join(SCENES_SRC, file);
+    if (sharp) {
+      const dest = path.join(SCENES_OUT, `${base}.webp`);
+      await sharp(src)
+        .resize({ width: 1600, withoutEnlargement: true })
+        .webp({ quality: 82, smartSubsample: true })
+        .toFile(dest);
+      const kb = Math.round(fs.statSync(dest).size / 1024);
+      console.log(`  ${file} → ${base}.webp (${kb} КБ)`);
+    } else {
+      fs.copyFileSync(src, path.join(SCENES_OUT, file));
+      console.log(`  ${file} → копия PNG`);
+    }
+  }
+}
+
 async function main() {
   console.log('Читаю MANUSCRIPT.md…');
   const md = fs.readFileSync(MANUSCRIPT, 'utf8');
@@ -274,6 +329,9 @@ async function main() {
 
   console.log('Готовлю иллюстрации…');
   const outNames = await buildIllustrations();
+
+  console.log('Готовлю островные сцены…');
+  await buildScenes();
 
   for (const ch of chapters) {
     const srcPng = ILLUSTRATION_BY_CHAPTER[ch.title];
@@ -291,6 +349,11 @@ async function main() {
     ch.environment = envOf[ch.id] || null;
     ch.category = catOf[ch.id] || null;
     ch.region = REGION_BY_CHAPTER[ch.id] || null;
+    const openerCopy = OPENER_COPY_BY_CHAPTER[ch.id];
+    if (openerCopy) {
+      ch.lead = openerCopy.lead;
+      ch.quote = openerCopy.quote;
+    }
     // Повествование дублируем только там, где оно отличается от полного текста:
     // иначе файл книги зря тяжелеет в два раза.
     if (split.hasPractical) ch.story = split.story;

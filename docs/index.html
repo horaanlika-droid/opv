@@ -68,6 +68,12 @@
     </nav>
   </header>
 
+  <!-- Прогресс чтения: тихий индикатор «глава N / всего» над нижним баром. -->
+  <div class="readout" id="readout" aria-hidden="true">
+    <div class="readout__track"><div class="readout__fill" id="readout-fill"></div></div>
+    <span class="readout__label" id="readout-label">— / 43</span>
+  </div>
+
   <!-- Нижний липкий бар: на телефоне заменяет верхнюю панель. Пять разделов
        книги и переход к сезонному календарю — как в бумажном указателе. -->
   <nav class="tabbar" id="tabbar" aria-label="Разделы книги">
@@ -356,6 +362,7 @@
 
   <script src="assets/js/config.js"></script>
   <script src="assets/js/chapter-split.js"></script>
+  <script src="assets/js/season-labels.js"></script>
   <script src="assets/js/markdown.js"></script>
   <script src="assets/js/audio.js"></script>
   <script src="assets/js/book.js"></script>

@@ -52,7 +52,12 @@ function findFile(candidates) {
 }
 
 function extractSections(markdown) {
-  const skipped = new Set(['содержание', 'шаблон продуктовой главы']);
+  const skipped = new Set([
+    'содержание',
+    'шаблон продуктовой главы',
+    'как читать этот документ',
+    'редакторская карта: что ещё нужно сделать',
+  ]);
   const sections = [];
   let current = null;
 

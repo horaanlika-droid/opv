@@ -142,3 +142,69 @@ test('служебная шапка главы не теряется, а вын�
     assert.ok(!ch.story.startsWith(ch.serviceNote), `${ch.id}: шапка вынесена из повествования`);
   }
 });
+
+test('служебные главы рабочего документа не публикуются', () => {
+  const titles = book.chapters.map((c) => c.title);
+  assert.ok(!titles.includes('Как читать этот документ'), 'инструкция к рабочему документу — служебная');
+  assert.ok(!titles.includes('Редакторская карта: что ещё нужно сделать'), 'редакторская карта — служебная');
+  // А текст вводных глав — авторский, из рабочей редакции 24.11.2026.
+  const filosofiya = byId.get('filosofiya');
+  assert.match(filosofiya.markdown, /Я вырос в Долинске/, 'новая авторская редакция «Философии» интегрирована');
+  assert.ok(!/Транскрипция страницы/.test(filosofiya.markdown), 'старая транскрипция заменена');
+});
+
+test('«Островные сцены»: каждый маркер в рукописи имеет сцену в манифесте', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'content', 'scenes.json'), 'utf8'));
+  const byScene = new Map(manifest.scenes.map((s) => [s.id, s]));
+  const manuscript = fs.readFileSync(path.join(ROOT, 'MANUSCRIPT.md'), 'utf8');
+  const markers = [...manuscript.matchAll(/\[ИЛЛЮСТРАЦИЯ:\s*([\w-]+)\s*\]/g)].map((m) => m[1]);
+  assert.ok(markers.length >= 7, `маркеров размещения достаточно: ${markers.length}`);
+  for (const id of markers) {
+    assert.ok(byScene.has(id), `маркер ${id} описан в docs/content/scenes.json`);
+    assert.equal(byScene.get(id).place.mode, 'marker', `${id}: маркерный способ привязки`);
+  }
+  for (const s of manifest.scenes) {
+    if (s.place.mode !== 'marker') continue;
+    const count = markers.filter((id) => id === s.id).length;
+    assert.equal(count, 1, `${s.id}: ровно один маркер в тексте`);
+    assert.ok(s.place.anchor, `${s.id}: точка размещения описана словами`);
+  }
+});
+
+test('«Островные сцены»: метаданные полные, статусы честные', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'content', 'scenes.json'), 'utf8'));
+  const statuses = new Set(['concept', 'test', 'ready', 'needs-check']);
+  for (const s of manifest.scenes) {
+    assert.ok(s.id && /^[a-z0-9-]+$/.test(s.id), `${s.id}: id в нижнем регистре`);
+    assert.ok(s.title, `${s.id}: название сцены`);
+    assert.ok(s.description && s.description.length > 30, `${s.id}: описание сюжета`);
+    assert.ok(s.source && s.source.length > 10, `${s.id}: источник визуальной информации`);
+    assert.ok(statuses.has(s.status), `${s.id}: статус «${s.status}» из допустимых`);
+    assert.ok(s.kind, `${s.id}: тип изображения`);
+    assert.ok(s.chapter || s.part, `${s.id}: привязка к главе или разделу`);
+    if (s.files && s.files.web) {
+      assert.ok(fs.existsSync(path.join(ROOT, 'docs', 'assets', 'scenes', s.files.web)), `${s.id}: web-файл на месте`);
+    }
+    if (s.status === 'concept') {
+      assert.ok(!s.files || !s.files.web, `${s.id}: концепт без готового изображения`);
+    }
+  }
+  const ready = manifest.scenes.filter((s) => s.files && s.files.web && s.place.mode !== 'opener').length;
+  assert.equal(ready, 12, 'все двенадцать бытовых сцен раскадровки в книге');
+});
+
+test('открытия глав: копия авторская (из макета), изображения на месте', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'content', 'scenes.json'), 'utf8'));
+  const openers = manifest.scenes.filter((s) => s.place && s.place.mode === 'opener');
+  assert.ok(openers.length >= 1, 'есть хотя бы одно открытие главы');
+  for (const s of openers) {
+    assert.ok(s.chapter, `${s.id}: привязано к главе`);
+    assert.ok(s.files && s.files.web, `${s.id}: изображение открытия на месте`);
+  }
+  // Текст открытия — только из макета автора; других глав с выдуманной копией нет.
+  const leads = book.chapters.filter((c) => c.lead || c.quote);
+  assert.equal(leads.length, 1, 'пока только «Философия» несёт копию макета');
+  assert.equal(leads[0].id, 'filosofiya');
+  assert.equal(leads[0].lead, 'Сахалинская кухня — это не про единственный рецепт, а про людей, море и остров.');
+  assert.equal(leads[0].quote, 'Здесь пересекаются разные культуры, меняются рецепты, а привычные продукты обретают новый смысл.');
+});
