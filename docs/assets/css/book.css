@@ -2656,3 +2656,24 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
 @media print {
   .chapter__player { display: none; }
 }
+
+/* ——— Страницы глав: одна глава — одна страница ——— */
+body.is-reading .front,
+body.is-reading .teasers,
+body.is-reading .scene,
+body.is-reading .part { display: none; }
+body.is-reading .part.is-current-part { display: block; }
+body.is-reading .part.is-current-part .part__head,
+body.is-reading .part.is-current-part .reference { display: none; }
+body.is-reading .chapter { display: none; }
+body.is-reading .chapter.is-current {
+  display: block;
+  animation: page-in 0.45s ease both;
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.is-reading .chapter.is-current { animation: none; }
+}

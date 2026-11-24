@@ -32,8 +32,13 @@ test('озвучка: манифест согласован с книгой', ()
   }
 });
 
-test('озвучка: «Философия» озвучена целиком', () => {
-  const ch = narration.chapters.find((c) => c.id === 'filosofiya');
-  assert.ok(ch, 'глава есть в манифесте');
-  assert.equal(ch.clips.length, 9, 'девять фрагментов — вся глава без пропусков');
+test('озвучка: вводные главы озвучены целиком', () => {
+  const ids = ['filosofiya', 'kuhnya-kotoruyu-sformirovali-more-les-i-vremya', 'ostrov-kak-sostoyanie'];
+  for (const id of ids) {
+    const ch = narration.chapters.find((c) => c.id === id);
+    assert.ok(ch, `${id}: глава есть в манифесте`);
+    assert.ok(ch.clips.length >= 2, `${id}: фрагменты на месте`);
+  }
+  const filosofiya = narration.chapters.find((c) => c.id === 'filosofiya');
+  assert.equal(filosofiya.clips.length, 9, 'у «Философии» девять фрагментов — без пропусков');
 });

@@ -1,6 +1,6 @@
 {
   "voice": "voice-00",
-  "note": "Голос временный (авто-кастинг); темп 0,8×. Список фрагментов растёт по мере озвучки глав.",
+  "note": "Голос временный (авто-кастинг); темп 0,8×. Три вводные главы озвучены целиком.",
   "audioDir": "assets/audio/narration",
   "chapters": [
     {
@@ -22,7 +22,31 @@
       "id": "kuhnya-kotoruyu-sformirovali-more-les-i-vremya",
       "title": "Кухня, которую сформировали море, лес и время",
       "clips": [
-        "kuhnya-01.mp3"
+        "kuhnya-01.mp3",
+        "kuhnya-02a.mp3",
+        "kuhnya-02b.mp3",
+        "kuhnya-03.mp3",
+        "kuhnya-04.mp3",
+        "kuhnya-05.mp3",
+        "kuhnya-06.mp3",
+        "kuhnya-07.mp3",
+        "kuhnya-08.mp3",
+        "kuhnya-09.mp3"
+      ]
+    },
+    {
+      "id": "ostrov-kak-sostoyanie",
+      "title": "Остров как состояние",
+      "clips": [
+        "ostrov-01.mp3",
+        "ostrov-02.mp3",
+        "ostrov-03.mp3",
+        "ostrov-04.mp3",
+        "ostrov-05.mp3",
+        "ostrov-06.mp3",
+        "ostrov-07a.mp3",
+        "ostrov-07b.mp3",
+        "ostrov-08.mp3"
       ]
     }
   ]

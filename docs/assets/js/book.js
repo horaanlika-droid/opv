@@ -651,6 +651,13 @@
    */
   function updateReadout() {
     if (!els.readFill) return;
+    // На странице главы прогресс — позиция главы в книге.
+    if (doc.body.classList.contains('is-reading') && state.pageId && chapterNo[state.pageId]) {
+      var total = Object.keys(chapterNo).length;
+      els.readFill.style.transform = 'scaleX(' + (chapterNo[state.pageId] / total).toFixed(4) + ')';
+      if (els.readLabel) els.readLabel.textContent = pad2(chapterNo[state.pageId]) + ' / ' + pad2(total);
+      return;
+    }
     var docH = (doc.documentElement.scrollHeight - window.innerHeight) || 1;
     var p = Math.min(1, Math.max(0, (window.scrollY || 0) / docH));
     els.readFill.style.transform = 'scaleX(' + p.toFixed(4) + ')';
@@ -1142,10 +1149,7 @@
 
       els.scene.style.setProperty('--depth', progress.toFixed(3));
 
-      var y = window.scrollY;
-      if (y > 140 && y > state.lastScroll + 4) els.bar.classList.add('is-hidden');
-      else if (y < state.lastScroll - 4 || y < 140) els.bar.classList.remove('is-hidden');
-      state.lastScroll = y;
+      // Панель с оглавлением всегда видна: вход в книгу возможен из любой точки.
 
       if (!markActiveTab.t) {
         markActiveTab.t = requestAnimationFrame(function () {
@@ -1383,6 +1387,51 @@
     return rect.top <= 0 && rect.bottom > window.innerHeight * 0.5;
   }
 
+  /* ——— Страницы: одна глава — одна страница, переходы вместо скролла ——— */
+
+  function showChapter(id) {
+    var art = doc.getElementById(id);
+    if (!art) return;
+    state.pageId = id;
+    doc.body.classList.add('is-reading');
+    doc.querySelectorAll('article.chapter').forEach(function (c) {
+      c.classList.toggle('is-current', c.id === id);
+    });
+    doc.querySelectorAll('main .part').forEach(function (p) {
+      p.classList.toggle('is-current-part', p.contains(art));
+    });
+    window.scrollTo(0, 0);
+    updateReadout();
+  }
+
+  function showHome(raw) {
+    state.pageId = null;
+    doc.body.classList.remove('is-reading');
+    doc.querySelectorAll('article.chapter.is-current').forEach(function (c) {
+      c.classList.remove('is-current');
+    });
+    doc.querySelectorAll('main .part.is-current-part').forEach(function (p) {
+      p.classList.remove('is-current-part');
+    });
+    if (raw && raw !== 'top') {
+      var target = doc.getElementById(raw);
+      if (target) { scrollToEl(target, false); return; }
+    }
+    window.scrollTo(0, 0);
+    updateReadout();
+  }
+
+  /** Единая точка маршрута: хеш ведёт либо на страницу главы, либо на главную. */
+  function route() {
+    var raw = location.hash.slice(1);
+    if (raw.indexOf('note-') === 0) return;
+    if (state.chapters[raw]) {
+      if (state.pageId !== raw) showChapter(raw);
+    } else if (state.pageId || raw) {
+      showHome(raw);
+    }
+  }
+
   function setupAnchors() {
     doc.addEventListener('click', function (e) {
       var a = e.target.closest('a[href^="#"]');
@@ -1398,26 +1447,23 @@
       e.preventDefault();
       closePanels();
 
-      // «Спуск по острову»: если глава — продукт, сначала показываем его зону
-      // в центральной сцене, потом раскрываем текст. Пропускаем, если читатель
-      // уже в разделе или предпочёл меньше движения.
-      var ch = state.chapters[raw];
-      var canBridge = CONFIG.sceneBridge && ch && ch.environment && state.scrollToLevel &&
-        !reduceMotion.matches && !a.hasAttribute('data-note');
-      if (canBridge && !inSamePart(raw)) {
-        document.body.classList.add('is-travelling');
-        announce('Спуск к зоне: ' + (LEVELS[(ENV_LEVEL[ch.environment] || 5) - 1] || {}).title);
-        state.scrollToLevel(ENV_LEVEL[ch.environment] || 5);
-        setTimeout(function () {
-          document.body.classList.remove('is-travelling');
-          scrollToEl(doc.getElementById(raw), true);
-          try { history.replaceState(null, '', '#' + raw); } catch (err) { /* file:// */ }
-        }, 900);
+      // Глава — отдельная страница: открываем её переходом, а не скроллом.
+      // Карта «спуска по острову» остаётся на главной со своими точками уровней.
+      if (state.chapters[raw]) {
+        if (state.pageId === raw) return;
+        try { history.pushState(null, '', '#' + raw); } catch (err) { /* file:// */ }
+        showChapter(raw);
         return;
       }
 
+      // Секция главной: если читали главу — сначала возвращаемся на главную.
+      if (state.pageId) {
+        try { history.pushState(null, '', '#' + raw); } catch (err2) { /* file:// */ }
+        showHome(raw);
+        return;
+      }
       scrollToEl(target, true);
-      try { history.replaceState(null, '', '#' + raw); } catch (e) { /* file:// */ }
+      try { history.replaceState(null, '', '#' + raw); } catch (e2) { /* file:// */ }
     });
   }
 
@@ -1443,8 +1489,12 @@
       return;
     }
     if (hash) {
-      var target = doc.getElementById(hash);
-      if (target) setTimeout(function () { scrollToEl(target, false); }, 60);
+      if (state.chapters[hash]) {
+        setTimeout(function () { showChapter(hash); }, 60);
+      } else {
+        var target = doc.getElementById(hash);
+        if (target) setTimeout(function () { scrollToEl(target, false); }, 60);
+      }
     }
   }
 
@@ -1456,6 +1506,7 @@
     wireNote();
     setupDonate();
     wirePlayers();
+    window.addEventListener('popstate', route);
 
     Promise.all([
       fetch('content/book.json', { cache: 'no-cache' }).then(function (r) {

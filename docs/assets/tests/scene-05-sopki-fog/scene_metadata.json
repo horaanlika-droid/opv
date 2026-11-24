@@ -1,0 +1,45 @@
+{
+  "scene_id": "scene_05_sopki_fog",
+  "title": "Сопки и туман",
+  "chapter": "ostrov",
+  "style": "mokuhanga_editorial",
+  "note": "Тестовая многослойная композиция «бумажного театра» (MASTER PROMPT 03, §04, §12). Слои — художественная реконструкция в эстетике мокуханги и суми-э, не подлинные оттиски. Значения параллакса — рабочий пример, уточняются при интеграции.",
+  "layers": [
+    {
+      "id": "background_sky",
+      "file": "background_sky.png",
+      "depth": 1,
+      "parallax": 0.1,
+      "role": "atmosphere"
+    },
+    {
+      "id": "middle_hills",
+      "file": "middle_hills.png",
+      "depth": 2,
+      "parallax": 0.35,
+      "role": "middle_ground"
+    },
+    {
+      "id": "foreground_ferns",
+      "file": "foreground_ferns.png",
+      "depth": 3,
+      "parallax": 0.7,
+      "role": "foreground"
+    }
+  ],
+  "textLayer": {
+    "id": "chapter_lead",
+    "between": ["middle_hills", "foreground_ferns"],
+    "note": "Заголовок и лид-абзац располагаются между средним и передним планами; текст проходит через сцену."
+  },
+  "blend": "multiply",
+  "animation": {
+    "scrollParallax": true,
+    "pointerTilt": false,
+    "prefersReducedMotion": "static"
+  },
+  "staticFallback": "Однослойный вариант: background_sky.png как фон, текст поверх.",
+  "mobile": {
+    "note": "На узких экранах положение объектов задаётся отдельно, а не масштабируется с десктопа (MASTER PROMPT 03, §10)."
+  }
+}
