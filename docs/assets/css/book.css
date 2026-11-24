@@ -2606,3 +2606,53 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
 @media print {
   .tabbar, .teasers, .readout { display: none !important; }
 }
+
+/* ——— Озвучка главы: плеер под открытием ——— */
+.chapter__player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 26rem;
+  margin: 1.2rem 0 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(34, 49, 52, 0.16);
+  border-radius: 999px;
+  background: var(--paper-lift);
+}
+.player__btn {
+  flex: none;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: 1px solid rgba(34, 49, 52, 0.28);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.player__btn:hover { background: var(--paper-deep); }
+.player__bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(34, 49, 52, 0.16);
+  cursor: pointer;
+}
+.player__fill {
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: var(--ink-soft);
+}
+.player__count {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+@media print {
+  .chapter__player { display: none; }
+}

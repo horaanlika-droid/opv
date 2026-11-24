@@ -29,4 +29,7 @@ window.BOOK_CONFIG = {
 
   /** Путь к манифесту «островных сцен» (бытовая хроника и природные зарисовки). */
   scenesUrl: 'content/scenes.json',
+
+  /** Путь к манифесту озвучки глав (фрагменты mp3 в assets/audio/narration). */
+  narrationUrl: 'content/narration.json',
 };
