@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ОСТРОВ. ПРОДУКТ. ВКУС — визуальный прототип</title>
+<style>
+  @font-face { font-family: "Cormorant"; src: url("assets/fonts/cormorant-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Cormorant"; src: url("assets/fonts/cormorant-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Cormorant"; src: url("assets/fonts/cormorant-500-italic.woff2") format("woff2"); font-weight: 500; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Cormorant"; src: url("assets/fonts/cormorant-600.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Spectral"; src: url("assets/fonts/spectral-300.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Spectral"; src: url("assets/fonts/spectral-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Spectral"; src: url("assets/fonts/spectral-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Inter"; src: url("assets/fonts/inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Inter"; src: url("assets/fonts/inter-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Inter"; src: url("assets/fonts/inter-600.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Inter"; src: url("assets/fonts/inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+
+  :root {
+    --paper: #E9E1D1;
+    --ink: #303A37;
+    --moss: #71827A;
+    --ochre: #8B6550;
+    --sea: #758D9A;
+    --stone: #777B73;
+    --rust: #A36E50;
+    --serif: "Cormorant", Georgia, serif;
+    --body: "Spectral", Georgia, serif;
+    --ui: "Inter", system-ui, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #DED5C0;
+    color: var(--ink);
+    font-family: var(--body);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+  ::selection { background: rgba(113,130,122,.25); }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 56px 32px 96px; }
+
+  /* ——— шапка лаборатории ——— */
+  .lab-head { border-bottom: 1px solid rgba(48,58,55,.22); padding-bottom: 36px; margin-bottom: 44px; }
+  .lab-kicker {
+    font-family: var(--ui); font-weight: 600; font-size: 11px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--moss); margin-bottom: 18px;
+  }
+  .lab-head h1 {
+    font-family: var(--serif); font-weight: 500; font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.06; letter-spacing: .01em;
+  }
+  .lab-head h1 .dot { color: var(--ochre); }
+  .lab-sub { max-width: 62ch; margin-top: 18px; font-size: 17px; color: rgba(48,58,55,.85); }
+  .lab-note {
+    margin-top: 14px; font-family: var(--ui); font-size: 12.5px; line-height: 1.7;
+    color: rgba(48,58,55,.62); max-width: 74ch;
+  }
+
+  .palette { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+  .sw {
+    font-family: var(--ui); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase;
+    color: rgba(48,58,55,.75); display: flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(48,58,55,.16); padding: 6px 10px 6px 6px; background: rgba(233,225,209,.55);
+  }
+  .sw i { width: 22px; height: 22px; display: inline-block; border: 1px solid rgba(48,58,55,.25); }
+
+  h2.section {
+    font-family: var(--ui); font-weight: 600; font-size: 12px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--moss); margin: 64px 0 8px;
+  }
+  .section-lead { max-width: 68ch; font-size: 16.5px; color: rgba(48,58,55,.8); margin-bottom: 28px; }
+
+  /* ——— тестовые иллюстрации ——— */
+  .plates { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+  .plate {
+    background: var(--paper); border: 1px solid rgba(48,58,55,.18); padding: 18px 18px 16px;
+    box-shadow: 0 1px 0 rgba(48,58,55,.08);
+  }
+  .plate .mat {
+    background: #F2ECDD; border: 1px solid rgba(48,58,55,.12); overflow: hidden;
+    aspect-ratio: 4 / 5; display: flex; align-items: center; justify-content: center;
+  }
+  .plate img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .plate h3 { font-family: var(--serif); font-weight: 600; font-size: 21px; margin: 14px 0 6px; }
+  .plate p { font-family: var(--ui); font-size: 12px; line-height: 1.65; color: rgba(48,58,55,.68); }
+  .plate .tech {
+    display: inline-block; font-family: var(--ui); font-weight: 600; font-size: 10px;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--ochre); margin-top: 10px;
+    border-top: 1px solid rgba(48,58,55,.18); padding-top: 8px;
+  }
+
+  /* ——— бумажный театр: широкая демонстрация ——— */
+  .theater-demo {
+    position: relative; overflow: hidden; background: var(--paper);
+    border: 1px solid rgba(48,58,55,.2); height: 560px; margin-top: 8px;
+  }
+  .theater-demo .th-layer {
+    position: absolute; inset: -12% 0; width: 100%; height: 124%;
+    object-fit: cover; mix-blend-mode: multiply; will-change: transform;
+  }
+  .theater-demo .th-mid { object-position: center 78%; }
+  .theater-demo .th-fore { object-position: center bottom; }
+  .theater-demo .th-text {
+    position: absolute; left: 8%; right: 42%; top: 16%; z-index: 3;
+  }
+  .kicker {
+    font-family: var(--ui); font-weight: 600; font-size: 11px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--ochre); margin-bottom: 12px;
+  }
+  .th-text h3 { font-family: var(--serif); font-weight: 500; font-size: 44px; line-height: 1.05; }
+  .th-text .lead { font-style: italic; font-size: 17px; margin-top: 14px; color: rgba(48,58,55,.88); }
+  .th-hint {
+    position: absolute; right: 18px; bottom: 14px; z-index: 4;
+    font-family: var(--ui); font-size: 11px; letter-spacing: .04em; color: rgba(48,58,55,.55);
+    background: rgba(233,225,209,.78); padding: 6px 10px; border: 1px solid rgba(48,58,55,.14);
+  }
+  .meta-note {
+    margin-top: 14px; font-family: var(--ui); font-size: 12px; color: rgba(48,58,55,.6);
+  }
+  pre.meta {
+    margin-top: 12px; background: rgba(48,58,55,.06); border: 1px solid rgba(48,58,55,.14);
+    padding: 16px 18px; font-size: 11.5px; line-height: 1.7; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; color: rgba(48,58,55,.78);
+  }
+
+  /* ——— рамки устройств ——— */
+  .screens-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(390px, 1fr));
+    gap: 40px 28px; justify-items: center;
+  }
+  .device { width: 390px; max-width: 100%; }
+  .device .cap {
+    font-family: var(--ui); font-size: 12px; line-height: 1.6; color: rgba(48,58,55,.66);
+    margin-top: 14px; text-align: center;
+  }
+  .device .cap b { color: var(--ink); font-weight: 600; }
+  .phone {
+    width: 390px; height: 844px; background: var(--paper); border-radius: 46px;
+    border: 1px solid rgba(48,58,55,.35); outline: 9px solid rgba(48,58,55,.14);
+    overflow: hidden; position: relative; margin: 0 auto;
+    box-shadow: 0 22px 44px rgba(48,58,55,.18);
+  }
+  .screen { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  .screen::-webkit-scrollbar { display: none; }
+
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 26px 26px 12px; font-family: var(--ui); font-size: 13px; color: var(--ink);
+  }
+  .topbar .ico {
+    width: 38px; height: 38px; border: 1px solid rgba(48,58,55,.28); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 15px; background: rgba(255,255,255,.14);
+  }
+  .topbar .grp { display: flex; gap: 10px; }
+
+  .tabbar {
+    position: sticky; bottom: 0; display: flex; justify-content: space-between;
+    padding: 14px 18px calc(14px + env(safe-area-inset-bottom));
+    background: rgba(233,225,209,.94); border-top: 1px solid rgba(48,58,55,.2);
+    font-family: var(--ui); font-weight: 600; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase;
+    backdrop-filter: blur(6px); z-index: 6;
+  }
+  .tabbar span { color: rgba(48,58,55,.5); }
+  .tabbar span.on { color: var(--ink); border-bottom: 1.5px solid var(--rust); padding-bottom: 3px; }
+
+  /* экран 1 — главная */
+  .home-island { height: 388px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .home-island img {
+    height: 350px; object-fit: contain;
+    filter: grayscale(.25) sepia(.32) saturate(.72) contrast(1.06) brightness(1.02);
+    opacity: .94;
+  }
+  .home-brand { padding: 4px 34px 8px; }
+  .home-brand h1 {
+    font-family: var(--serif); font-weight: 500; font-size: 52px; line-height: .98; letter-spacing: .012em;
+  }
+  .home-brand h1 .dot { color: var(--ochre); }
+  .home-menu { padding: 22px 34px 30px; display: flex; flex-direction: column; }
+  .home-menu a {
+    display: flex; justify-content: space-between; align-items: baseline;
+    text-decoration: none; color: var(--ink); border-top: 1px solid rgba(48,58,55,.22);
+    padding: 15px 2px; font-family: var(--ui); font-weight: 600; font-size: 13px; letter-spacing: .18em;
+  }
+  .home-menu a:last-child { border-bottom: 1px solid rgba(48,58,55,.22); }
+  .home-menu a i { font-style: normal; color: var(--ochre); font-size: 15px; }
+  .home-sub { padding: 0 34px; font-family: var(--ui); font-size: 11px; letter-spacing: .06em; color: rgba(48,58,55,.55); }
+
+  /* экран 2 — бумажный театр на телефоне */
+  .th-stage {
+    position: relative; height: 720px; overflow: hidden; background: var(--paper);
+  }
+  .th-stage .th-layer {
+    position: absolute; inset: -10% 0; width: 100%; height: 120%;
+    object-fit: cover; mix-blend-mode: multiply; will-change: transform;
+  }
+  .th-stage .th-mid { object-position: center 72%; }
+  .th-stage .th-fore { object-position: center bottom; }
+  .th-stage .th-text { position: absolute; left: 30px; right: 76px; top: 132px; z-index: 3; }
+  .th-stage .th-text h2 { font-family: var(--serif); font-weight: 500; font-size: 44px; line-height: 1.02; }
+  .th-stage .th-text .lead { font-style: italic; font-size: 16px; margin-top: 16px; color: rgba(48,58,55,.9); }
+  .th-body { padding: 40px 32px 60px; }
+  .th-body p { font-size: 17.5px; line-height: 1.75; margin-bottom: 22px; }
+  .th-body p:first-child::first-letter { font-family: var(--serif); font-size: 52px; float: left; line-height: .9; padding: 6px 10px 0 0; color: var(--ochre); }
+
+  /* экран 3 — море */
+  .chapter-head { padding: 6px 32px 20px; }
+  .chapter-head h2 { font-family: var(--serif); font-weight: 500; font-size: 76px; line-height: .95; }
+  .chapter-head .lead { font-style: italic; font-size: 17px; color: rgba(48,58,55,.85); margin-top: 18px; max-width: 30ch; }
+  .gyo-plate { margin: 8px 22px 6px; background: #F2ECDD; border: 1px solid rgba(48,58,55,.14); padding: 12px; }
+  .gyo-plate img { width: 100%; display: block; }
+  .gyo-plate figcaption {
+    font-family: var(--ui); font-size: 10.5px; letter-spacing: .05em; color: rgba(48,58,55,.6);
+    padding: 10px 4px 2px; display: flex; justify-content: space-between; gap: 10px;
+  }
+  .index-lines { padding: 18px 32px 30px; }
+  .index-lines a {
+    display: flex; justify-content: space-between; text-decoration: none; color: var(--ink);
+    border-top: 1px solid rgba(48,58,55,.2); padding: 13px 2px; font-family: var(--ui); font-size: 12px;
+    letter-spacing: .12em; text-transform: uppercase; font-weight: 500;
+  }
+  .index-lines a:last-child { border-bottom: 1px solid rgba(48,58,55,.2); }
+  .index-lines a i { font-style: normal; color: rgba(48,58,55,.5); letter-spacing: .02em; text-transform: none; }
+
+  /* экран 4 — продукт */
+  .prod-art { background: #F2ECDD; margin: 4px 18px 0; border: 1px solid rgba(48,58,55,.13); padding: 10px; }
+  .prod-art img { width: 100%; display: block; }
+  .prod-title { padding: 22px 32px 4px; }
+  .prod-title h2 { font-family: var(--serif); font-weight: 500; font-size: 64px; line-height: 1; }
+  .prod-season { padding: 8px 32px 0; font-family: var(--ui); font-size: 12.5px; letter-spacing: .14em; color: var(--ochre); text-transform: uppercase; font-weight: 600; }
+  .prod-text { padding: 20px 32px 10px; }
+  .prod-text p { font-size: 17.5px; line-height: 1.72; margin-bottom: 18px; }
+  .prod-text .draft {
+    font-family: var(--ui); font-size: 11px; color: rgba(48,58,55,.55); letter-spacing: .03em;
+    border-left: 2px solid rgba(163,110,80,.5); padding-left: 12px; margin: 22px 0;
+  }
+  .chef-note {
+    margin: 18px 32px 28px; border: 1px solid rgba(48,58,55,.22); padding: 18px 20px;
+    display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,.12);
+  }
+  .chef-note a { font-family: var(--serif); font-size: 23px; color: var(--ink); text-decoration: none; font-weight: 600; }
+  .chef-note small { font-family: var(--ui); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(48,58,55,.6); }
+
+  /* экран 5 — сезон */
+  .season-head { padding: 14px 32px 10px; }
+  .season-head h2 { font-family: var(--serif); font-weight: 500; font-size: 52px; line-height: 1.02; margin-top: 10px; }
+  .season-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 22px 26px 30px; }
+  .season-card {
+    border: 1px solid rgba(48,58,55,.22); padding: 18px 16px 16px; min-height: 148px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    background: rgba(255,255,255,.1);
+  }
+  .season-card .nm { font-family: var(--ui); font-weight: 700; font-size: 12px; letter-spacing: .22em; }
+  .season-card .mo { font-family: var(--serif); font-size: 21px; line-height: 1.15; color: rgba(48,58,55,.82); }
+  .season-card .ic { font-size: 17px; color: var(--ochre); }
+  .season-note { padding: 2px 32px 26px; font-family: var(--ui); font-size: 11px; line-height: 1.7; color: rgba(48,58,55,.55); }
+
+  /* десктоп */
+  .desktop-wrap { margin-top: 12px; }
+  .desktop {
+    width: 1440px; height: 880px; background: var(--paper); border: 1px solid rgba(48,58,55,.32);
+    overflow: hidden; position: relative;
+    box-shadow: 0 22px 44px rgba(48,58,55,.16);
+  }
+  .desktop-scale { transform: scale(.62); transform-origin: top left; width: 1440px; height: 880px; }
+  .desktop-sizebox { width: 893px; height: 546px; overflow: hidden; max-width: 100%; }
+  .d-top {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 30px 54px 20px; border-bottom: 1px solid rgba(48,58,55,.18);
+  }
+  .d-nav { display: flex; gap: 38px; font-family: var(--ui); font-weight: 600; font-size: 12px; letter-spacing: .2em; }
+  .d-nav span.on { color: var(--ink); border-bottom: 1.5px solid var(--rust); padding-bottom: 4px; }
+  .d-nav span { color: rgba(48,58,55,.5); }
+  .d-tools { display: flex; gap: 12px; align-items: center; font-family: var(--ui); font-size: 12px; color: rgba(48,58,55,.7); }
+  .d-tools .ico { width: 36px; height: 36px; border: 1px solid rgba(48,58,55,.28); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .d-body { display: grid; grid-template-columns: 1.45fr 1fr; gap: 0; height: 700px; }
+  .d-hero { position: relative; overflow: hidden; border-right: 1px solid rgba(48,58,55,.16); background: #E4DAC6; }
+  .d-hero .d-layers { position: absolute; inset: -8% 0; height: 116%; }
+  .d-hero .d-layers img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    mix-blend-mode: multiply; will-change: transform;
+  }
+  .d-hero .d-copy { position: absolute; left: 54px; top: 64px; z-index: 3; max-width: 26ch; }
+  .d-hero .d-copy h1 { font-family: var(--serif); font-weight: 500; font-size: 92px; line-height: .95; }
+  .d-hero .d-copy h1 .dot { color: var(--ochre); }
+  .d-hero .d-copy .lead { font-style: italic; font-size: 19px; margin-top: 22px; color: rgba(48,58,55,.9); }
+  .d-side { padding: 46px 54px 30px; overflow: hidden; }
+  .d-side h3 { font-family: var(--ui); font-weight: 600; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--moss); margin-bottom: 18px; }
+  .d-side a {
+    display: flex; justify-content: space-between; text-decoration: none; color: var(--ink);
+    border-top: 1px solid rgba(48,58,55,.18); padding: 13px 2px; font-family: var(--body); font-size: 16px;
+  }
+  .d-side a:last-of-type { border-bottom: 1px solid rgba(48,58,55,.18); }
+  .d-side a i { font-style: normal; font-family: var(--ui); font-size: 10.5px; letter-spacing: .12em; color: rgba(48,58,55,.5); text-transform: uppercase; }
+
+  footer.lab-foot {
+    margin-top: 84px; border-top: 1px solid rgba(48,58,55,.22); padding-top: 28px;
+    font-family: var(--ui); font-size: 12.5px; line-height: 1.8; color: rgba(48,58,55,.62); max-width: 78ch;
+  }
+
+  @media (max-width: 900px) {
+    .desktop-sizebox { width: 100%; height: auto; }
+    .desktop-scale { transform: scale(.42); }
+    .desktop-sizebox { height: 372px; }
+    .th-text h3 { font-size: 32px; }
+    .theater-demo { height: 420px; }
+    .theater-demo .th-text { right: 12%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="lab-head">
+    <p class="lab-kicker">MASTER PROMPT 03 · Этапы 2–3 · визуальный прототип и тестовые иллюстрации</p>
+    <h1>ОСТРОВ<span class="dot">.</span> ПРОДУКТ<span class="dot">.</span> ВКУС</h1>
+    <p class="lab-sub">Sakhalin Natural History Print Atlas — рабочий прототип визуальной системы: гётаку для морских продуктов, мокуханга для географии, суми-э для растений и животных, японская книжная графика для быта. Многослойный «бумажный театр» и текст, проходящий между планами.</p>
+    <p class="lab-note">Все изображения на этой странице — цифровые работы: художественная реконструкция в эстетике гётаку, мокуханги, суми-э и японской книжной графики. Это не подлинные оттиски с реальных рыб и предметов (MASTER PROMPT 03, §02). Тексты — фрагменты авторской рукописи, приведены без изменений.</p>
+    <div class="palette">
+      <span class="sw"><i style="background:#E9E1D1"></i>Васи · #E9E1D1</span>
+      <span class="sw"><i style="background:#303A37"></i>Тушь · #303A37</span>
+      <span class="sw"><i style="background:#71827A"></i>Мох · #71827A</span>
+      <span class="sw"><i style="background:#8B6550"></i>Охра · #8B6550</span>
+      <span class="sw"><i style="background:#758D9A"></i>Море · #758D9A</span>
+      <span class="sw"><i style="background:#777B73"></i>Камень · #777B73</span>
+      <span class="sw"><i style="background:#A36E50"></i>Ржавчина · #A36E50</span>
+    </div>
+  </header>
+
+  <!-- ================= ЭТАП 3: ТЕСТОВЫЕ ИЛЛЮСТРАЦИИ ================= -->
+  <h2 class="section">Этап 3 · Тестовые иллюстрации · четыре техники</h2>
+  <p class="section-lead">Пять направлений (и цветной вариант гётаку) — проверка, что все техники выглядят частями одной книги. После вашего утверждения — массовое производство партиями с промежуточными проверками.</p>
+
+  <div class="plates">
+    <figure class="plate">
+      <div class="mat"><img src="assets/tests/test-01-gyotaku-keta.webp" alt="Гётаку: кета, монохромный оттиск"></div>
+      <h3>Кета · монохромное гётаку</h3>
+      <p>Основная техника морских продуктов: оттиск с рыбы, неравномерное давление, прожатые и сухие участки, волокна васи, крап. Смотрится как скан настоящего ручного листа.</p>
+      <span class="tech">A · Гётаку</span>
+    </figure>
+    <figure class="plate">
+      <div class="mat"><img src="assets/tests/test-01b-gyotaku-keta-handcolored.webp" alt="Гётаку с ручной подкраской"></div>
+      <h3>Кета · гётаку с подкраской</h3>
+      <p>Тот же оттиск с деликатной ручной подкраской полупрозрачными слоями: тушь остаётся главной, цвет — сдержанный. Один из допустимых вариантов серии.</p>
+      <span class="tech">A · Гётаку, вариант</span>
+    </figure>
+    <figure class="plate">
+      <div class="mat"><img src="assets/tests/test-02-mokuhanga-sopki.webp" alt="Мокуханга: сопки и туман"></div>
+      <h3>Сопки и туман · мокуханга</h3>
+      <p>География и пейзаж: мягкие цветовые переходы, видимые печатные слои, лёгкие сдвиги приводки. Сахалинский рельеф, а не условный японский остров.</p>
+      <span class="tech">B · Мокуханга</span>
+    </figure>
+    <figure class="plate">
+      <div class="mat"><img src="assets/tests/test-03-sumie-paporotnik.webp" alt="Суми-э: папоротник-орляк"></div>
+      <h3>Папоротник-орляк · суми-э</h3>
+      <p>Дикоросы и природа: живая тушевая линия, ботаническая узнаваемость, минимум декора, сдержанная подкраска — как лист старого естественно-научного атласа.</p>
+      <span class="tech">C · Суми-э и ботаника</span>
+    </figure>
+    <figure class="plate">
+      <div class="mat"><img src="assets/tests/test-04-byt-dolinsk.webp" alt="Бытовая сцена: Долинск, соседский обмен"></div>
+      <h3>Соседский обмен · Долинск</h3>
+      <p>Быт — отдельная техника, не гётаку: японская книжная графика и мокуханга. Обычный городской двор, естественные жесты, лёгкая документальная ирония. Долинск — город, не рыбацкая деревня.</p>
+      <span class="tech">D · Книжная графика</span>
+    </figure>
+    <figure class="plate">
+      <div class="mat"><img src="assets/tests/scene-05-sopki-fog/middle_hills.webp" alt="Слой бумажного театра: лесные склоны"></div>
+      <h3>Бумажный театр · слои</h3>
+      <p>Каждый план — отдельный файл (фон, средний, передний) с метаданными и параллаксом. Ниже — рабочая демонстрация со сценой «Сопки и туман».</p>
+      <span class="tech">Слои · scene_05_sopki_fog</span>
+    </figure>
+  </div>
+
+  <!-- ================= БУМАЖНЫЙ ТЕАТР ================= -->
+  <h2 class="section">Бумажный театр · демонстрация механики</h2>
+  <p class="section-lead">Текст проходит через сцену: заголовок стоит перед дальним планом, лид-абзац — между средним и передним планами. При прокрутке страницы слои движутся с разной скоростью; при системной настройке «уменьшить движение» сцена остаётся статичной.</p>
+
+  <div class="theater-demo" data-theater>
+    <img class="th-layer th-sky" data-parallax="0.10" src="assets/tests/scene-05-sopki-fog/background_sky.webp" alt="">
+    <img class="th-layer th-mid" data-parallax="0.35" src="assets/tests/scene-05-sopki-fog/middle_hills.webp" alt="">
+    <div class="th-text">
+      <p class="kicker">Раздел первый · Остров</p>
+      <h3>Сопки и туман</h3>
+      <p class="lead">«На вершине сопки человек видит остров целиком — или думает, что видит. На самом деле большую часть пространства закрывают складки рельефа и погода.»</p>
+    </div>
+    <img class="th-layer th-fore" data-parallax="0.70" src="assets/tests/scene-05-sopki-fog/foreground_ferns.webp" alt="">
+    <p class="th-hint">слои: 0.10 / 0.35 / 0.70 · прокрутите страницу</p>
+  </div>
+
+  <p class="meta-note">Метаданные сцены (<code>assets/tests/scene-05-sopki-fog/scene_metadata.json</code>) — структура из MASTER PROMPT 03, §12:</p>
+  <pre class="meta">{
+  "scene_id": "scene_05_sopki_fog",
+  "chapter": "ostrov",
+  "style": "mokuhanga_editorial",
+  "layers": [
+    { "id": "background_sky",    "depth": 1, "parallax": 0.10 },
+    { "id": "middle_hills",      "depth": 2, "parallax": 0.35 },
+    { "id": "foreground_ferns",  "depth": 3, "parallax": 0.70 }
+  ],
+  "textLayer": { "between": ["middle_hills", "foreground_ferns"] },
+  "animation": { "prefersReducedMotion": "static" }
+}</pre>
+
+  <!-- ================= ЭТАП 2: ЭКРАНЫ ================= -->
+  <h2 class="section">Этап 2 · Экраны iPhone</h2>
+  <p class="section-lead">Пять тестовых экранов по дизайн-референсу: главная с островом, глава «Остров» с бумажным театром, глава «Море» с гётаку, продуктовая страница, сезонный календарь.</p>
+
+  <div class="screens-grid">
+
+    <!-- ЭКРАН 1 · ГЛАВНАЯ -->
+    <div class="device">
+      <div class="phone">
+        <div class="screen">
+          <div class="topbar">
+            <div class="ico">☰</div>
+            <div class="grp"><div class="ico">♪</div></div>
+          </div>
+          <div class="home-island">
+            <img src="assets/art/island-poster.webp" alt="Карта Сахалина">
+          </div>
+          <div class="home-brand">
+            <h1>ОСТРОВ<span class="dot">.</span><br>ПРОДУКТ<span class="dot">.</span><br>ВКУС<span class="dot">.</span></h1>
+          </div>
+          <p class="home-sub">атлас острова · продукты · память</p>
+          <nav class="home-menu">
+            <a href="#">ОСТРОВ <i>→</i></a>
+            <a href="#">МОРЕ <i>→</i></a>
+            <a href="#">ЛЕС <i>→</i></a>
+            <a href="#">ДИЧЬ <i>→</i></a>
+            <a href="#">СЕЗОН <i>→</i></a>
+          </nav>
+        </div>
+      </div>
+      <p class="cap"><b>Экран 1. Главная.</b> Интерактивный атлас: многослойный остров (планируется мокуханга-картография), заголовок, тонкое меню, иконка звука. Прелоадинг с рассеивающимся туманом.</p>
+    </div>
+
+    <!-- ЭКРАН 2 · ОСТРОВ, БУМАЖНЫЙ ТЕАТР -->
+    <div class="device">
+      <div class="phone">
+        <div class="screen">
+          <div class="topbar">
+            <div class="ico">←</div>
+            <div class="grp"><div class="ico">☰</div><div class="ico">↗</div></div>
+          </div>
+          <div class="th-stage" data-theater>
+            <img class="th-layer th-sky" data-parallax="0.10" src="assets/tests/scene-05-sopki-fog/background_sky.webp" alt="">
+            <img class="th-layer th-mid" data-parallax="0.35" src="assets/tests/scene-05-sopki-fog/middle_hills.webp" alt="">
+            <div class="th-text">
+              <p class="kicker">Раздел первый</p>
+              <h2>Остров как состояние</h2>
+              <p class="lead">«Мне кажется, Сахалин лучше читать не сверху вниз по списку достопримечательностей, а постепенно спускаясь по его рельефу. Сначала — горы и сопки.»</p>
+            </div>
+            <img class="th-layer th-fore" data-parallax="0.70" src="assets/tests/scene-05-sopki-fog/foreground_ferns.webp" alt="">
+          </div>
+          <div class="th-body">
+            <p>На вершине сопки человек видит остров целиком — или думает, что видит. На самом деле большую часть пространства закрывают складки рельефа и погода. Туман может появиться быстро и так же быстро исчезнуть.</p>
+            <p>Он не обязан быть мистическим символом. Иногда это просто погода, которая мешает рассмотреть дорогу. Но именно с такого тумана удобно начинать путешествие: сначала виден только ближайший склон, затем постепенно открывается следующий.</p>
+            <p>Спускаясь ниже, мы попадаем в лес. Здесь масштаб меняется. Вместо дальнего горизонта — отдельные стволы, влажная земля, листья, грибы, ягоды и растения, которые нужно уметь различать.</p>
+          </div>
+        </div>
+      </div>
+      <p class="cap"><b>Экран 2. Глава «Остров».</b> Вертикальный бумажный театр: текст между средним и передним планами, параллакс при прокрутке, статичный режим при «уменьшить движение».</p>
+    </div>
+
+    <!-- ЭКРАН 3 · МОРЕ -->
+    <div class="device">
+      <div class="phone">
+        <div class="screen">
+          <div class="topbar">
+            <div class="ico">←</div>
+            <div class="grp"><div class="ico">☰</div><div class="ico">♪</div></div>
+          </div>
+          <div class="chapter-head">
+            <p class="kicker">Раздел второй</p>
+            <h2>Море</h2>
+            <p class="lead">«Море здесь не фон и не линия на карте. Оно задаёт ритм. Оно приносит рыбу и морепродукты, меняет доступность побережья, влияет на дороги и планы.»</p>
+          </div>
+          <figure class="gyo-plate">
+            <img src="assets/tests/test-01-gyotaku-keta.webp" alt="Гётаку: кета">
+            <figcaption><span>Кета · Oncorhynchus keta</span><span>гётаку-реконструкция</span></figcaption>
+          </figure>
+          <div class="index-lines">
+            <a href="#">Кета <i>лето — осень</i></a>
+            <a href="#">Кижуч <i>осень</i></a>
+            <a href="#">Горбуша <i>лето</i></a>
+            <a href="#">Навага <i>зима — ранняя весна</i></a>
+            <a href="#">Сельдь <i>сезон уточняется</i></a>
+          </div>
+          <div class="tabbar"><span>Остров</span><span class="on">Море</span><span>Лес</span><span>Дичь</span><span>Сезон</span></div>
+        </div>
+      </div>
+      <p class="cap"><b>Экран 3. Глава «Море».</b> Разделительная страница с крупным заголовком, курсивным лидом и гётаку-плитой. Сезонность — тонкой строкой, без цветных карточек.</p>
+    </div>
+
+    <!-- ЭКРАН 4 · ПРОДУКТ -->
+    <div class="device">
+      <div class="phone">
+        <div class="screen">
+          <div class="topbar">
+            <div class="ico">←</div>
+            <div class="grp"><div class="ico">☰</div><div class="ico">↗</div></div>
+          </div>
+          <figure class="prod-art">
+            <img src="assets/tests/test-01b-gyotaku-keta-handcolored.webp" alt="Кета, гётаку с подкраской">
+          </figure>
+          <div class="prod-title"><h2>Кета</h2></div>
+          <p class="prod-season">☀ Лето — Осень</p>
+          <div class="prod-text">
+            <p>«Кета (<i>Oncorhynchus keta</i>) на Сахалине описана как летняя и осенняя расы; их распределение различается по районам.»</p>
+            <p class="draft">Фрагмент черновика главы. В книге — полный авторский текст: «кета» — не одинаковая рыба вне времени и места. Рецепты добавляются автором, без домыслов.</p>
+          </div>
+          <div class="chef-note">
+            <a href="#">Заметка шефа ↗</a>
+            <small>Обработка · Техника · Авторский рецепт</small>
+          </div>
+          <div class="tabbar"><span>Остров</span><span class="on">Море</span><span>Лес</span><span>Дичь</span><span>Сезон</span></div>
+        </div>
+      </div>
+      <p class="cap"><b>Экран 4. Продуктовая страница.</b> Иллюстрация сверху, название, тонкая сезонная строка, текст, «Заметка шефа ↗» с подписью «Обработка · Техника · Авторский рецепт». Не CTA и не кнопка покупки.</p>
+    </div>
+
+    <!-- ЭКРАН 5 · СЕЗОН -->
+    <div class="device">
+      <div class="phone">
+        <div class="screen">
+          <div class="topbar">
+            <div class="ico">←</div>
+            <div class="grp"><div class="ico">☰</div><div class="ico">♪</div></div>
+          </div>
+          <div class="season-head">
+            <p class="kicker">Сезон</p>
+            <h2>Календарь продуктов Сахалина</h2>
+          </div>
+          <div class="season-grid">
+            <div class="season-card"><span class="ic">✳</span><div><p class="nm">Весна</p><p class="mo">Май — Июнь</p></div></div>
+            <div class="season-card"><span class="ic">☀</span><div><p class="nm">Лето</p><p class="mo">Июль — Август</p></div></div>
+            <div class="season-card"><span class="ic">۞</span><div><p class="nm">Осень</p><p class="mo">Сентябрь — Ноябрь</p></div></div>
+            <div class="season-card"><span class="ic">❄</span><div><p class="nm">Зима</p><p class="mo">Декабрь — Февраль</p></div></div>
+          </div>
+          <p class="season-note">Календарь связан с метаданными продуктовых глав. В карточках продукта различаются: природный сезон · период добычи или сбора · фактическая доступность на рынке.</p>
+          <div class="tabbar"><span>Остров</span><span>Море</span><span>Лес</span><span>Дичь</span><span class="on">Сезон</span></div>
+        </div>
+      </div>
+      <p class="cap"><b>Экран 5. Сезонный календарь.</b> Отдельная страница «СЕЗОН» с сеткой 2×2 и нижней панелью из пяти разделов. Внутри продуктовых глав — только тонкая строка сезона.</p>
+    </div>
+
+    <!-- ЭКРАН 6 · ДЕСКТОП (см. ниже) -->
+    <div class="device" style="width:100%; max-width: 893px;">
+      <div class="desktop-wrap">
+        <div class="desktop-sizebox">
+          <div class="desktop-scale">
+            <div class="desktop">
+              <div class="d-top">
+                <nav class="d-nav">
+                  <span class="on">ОСТРОВ</span><span>МОРЕ</span><span>ЛЕС</span><span>ДИЧЬ</span><span>СЕЗОН</span>
+                </nav>
+                <div class="d-tools">
+                  <span>Найти продукт</span>
+                  <div class="ico">♪</div>
+                </div>
+              </div>
+              <div class="d-body">
+                <div class="d-hero">
+                  <div class="d-layers" data-theater>
+                    <img data-parallax="0.10" src="assets/tests/scene-05-sopki-fog/background_sky.webp" alt="">
+                    <img data-parallax="0.35" src="assets/tests/scene-05-sopki-fog/middle_hills.webp" alt="">
+                    <img data-parallax="0.70" src="assets/tests/scene-05-sopki-fog/foreground_ferns.webp" alt="">
+                  </div>
+                  <div class="d-copy">
+                    <h1>ОСТРОВ<span class="dot">.</span><br>ПРОДУКТ<span class="dot">.</span><br>ВКУС<span class="dot">.</span></h1>
+                    <p class="lead">«Сначала — горы и сопки. Потом лес, который закрывает горизонт и заставляет смотреть под ноги. Ниже — реки и долины, где вода собирает в себе движение острова.»</p>
+                  </div>
+                </div>
+                <aside class="d-side">
+                  <h3>Оглавление</h3>
+                  <a href="#">Философия <i>глава</i></a>
+                  <a href="#">Кухня, которую сформировали море, лес и время <i>глава</i></a>
+                  <a href="#">Остров как состояние <i>глава</i></a>
+                  <a href="#">Море: от корюшки до трепанга <i>раздел</i></a>
+                  <a href="#">Лес: дикоросы <i>раздел</i></a>
+                  <a href="#">Дичь <i>раздел</i></a>
+                  <a href="#">Сезонная карта продуктов <i>календарь</i></a>
+                  <a href="#">Заключение <i>глава</i></a>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="cap"><b>Экран 6. Десктоп.</b> Полноценный экран: навигация разделов, сцена бумажного театра как главный план, тонкое оглавление сбоку — доступно в любой момент, без обязательного прохождения маршрута.</p>
+    </div>
+
+  </div>
+
+  <footer class="lab-foot">
+    <p><b>Что дальше (по MASTER PROMPT 03):</b> вы утверждаете тестовые иллюстрации и экраны → Этап 4 «Производство»: серия изображений партиями с промежуточными проверками качества (гётаку для 23+ морских продуктов, мокуханга для природных сцен, суми-э для дикоросов и дичи, книжная графика для 15 бытовых сцен), переработка интерфейса под эту систему, раскладка сцен по слоям с параллаксом, мобильная адаптация композиций, аудиослои глав. Авторские тексты не переписываются и не сокращаются; недостающие материалы остаются в статусе запроса.</p>
+    <p style="margin-top:14px">Тестовые мастера: <code>assets/tests/</code> · веб-версии: <code>docs/assets/tests/</code> · конвертация: <code>node tools/build-tests.js</code></p>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    var theaters = Array.prototype.slice.call(document.querySelectorAll('[data-theater]'));
+    var ticking = false;
+
+    function update() {
+      ticking = false;
+      var vh = window.innerHeight;
+      theaters.forEach(function (stage) {
+        var r = stage.getBoundingClientRect();
+        var center = r.top + r.height / 2;
+        var progress = (vh / 2 - center) / vh; // -1..1 примерно
+        progress = Math.max(-1, Math.min(1, progress));
+        Array.prototype.forEach.call(stage.querySelectorAll('[data-parallax]'), function (layer) {
+          var depth = parseFloat(layer.getAttribute('data-parallax')) || 0;
+          layer.style.transform = 'translateY(' + (progress * depth * 56).toFixed(2) + 'px)';
+        });
+      });
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  })();
+</script>
+</body>
+</html>
