@@ -53,6 +53,13 @@ const ILLUSTRATION_BY_CHAPTER = {
   'Спизула': 'spizula-01.png',
   'Карбикула': 'karbikula-01.png',
   'Морская капуста': 'morskaya-kapusta-01.png',
+  'Морошка': 'moroshka-01.png',
+  'Клоповка (красника)': 'klopovka-01.png',
+  'Папоротники: орляк и осмунд': 'paporotniki-01.png',
+  'Крапива': 'krapiva-01.png',
+  'Черемша': 'cheremsha-01.png',
+  'Гусь и утка': 'gus-utka-01.png',
+  'Заяц-беляк': 'zayats-01.png',
 };
 
 const TRANSLIT = {
