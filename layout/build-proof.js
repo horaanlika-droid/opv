@@ -15,7 +15,7 @@ for (const file of [cover, illustration, regular, bold]) {
 
 const W = 760;
 const H = W * 1545 / 2000;
-const paper = '#fbfaf6';
+const paper = '#f8f3e4';
 const ink = '#171715';
 const muted = '#77766f';
 const doc = new PDFDocument({ size: [W, H], margin: 0, compress: true, info: {
