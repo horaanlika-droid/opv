@@ -110,6 +110,7 @@
     book: null,
     chapters: {},
     seasons: null,
+    scenes: null,
     sceneFrame: 0,
     lastScroll: 0,
     noteChapter: null,
@@ -180,8 +181,35 @@
 
   function chapterMeta(ch) {
     var md = ch.markdown || '';
-    var isDraft = /\[[^\]]{3,}\]/.test(md);
+    // Маркеры привязки иллюстраций — служебная разметка, а не редакционный долг.
+    var editorial = md.replace(/\[ИЛЛЮСТРАЦИЯ:[^\]]*\]/g, '');
+    var isDraft = /\[[^\]]{3,}\]/.test(editorial);
     return { isDraft: isDraft };
+  }
+
+  /** Метка продукта и сезонная отметка — тихий информационный слой у заголовка. */
+  function productMetaHtml(ch) {
+    if (!ch || !(ch.category || ch.environment)) return '';
+    var bits = [];
+    if (ch.category && CAT_LABEL[ch.category]) bits.push(CAT_LABEL[ch.category]);
+    if (ch.environment && ENV_LABEL[ch.environment]) bits.push(ENV_LABEL[ch.environment]);
+    var html = bits.length
+      ? '<p class="chapter__product">' + esc(bits.join(' · ')) + '</p>'
+      : '';
+    if (window.SeasonLabels && state.seasons) {
+      var m = window.SeasonLabels.markFor(state.seasons, ch.id);
+      if (m.state === 'scheduled') {
+        html += '<p class="season-mark">' +
+          '<a href="' + esc(m.href) + '" title="' + esc(m.title) + '">' + esc(m.label) + '</a>' +
+          (m.months ? '<span class="season-mark__months">' + esc(m.months) + '</span>' : '') +
+          '</p>';
+      } else if (m.state === 'unscheduled') {
+        html += '<p class="season-mark season-mark--unknown">' +
+          '<a href="' + esc(m.href) + '" title="' + esc(m.title) + '">' + esc(m.label) + '</a>' +
+          '</p>';
+      }
+    }
+    return html;
   }
 
   function announce(message) {
@@ -304,6 +332,7 @@
         '<header class="chapter__head">' +
           '<p class="chapter__num">' + esc(partTitleFor(ch.id)) + ' · ' + pad2(index + 1) + '</p>' +
           '<h2 class="chapter__title">' + esc(ch.title) + '</h2>' +
+          productMetaHtml(ch) +
           (meta.isDraft ? '<p class="chapter__meta">Рабочий черновик · редакционные пометки сохранены</p>' : '') +
           noteLinkHtml(ch) +
         '</header>' +
@@ -378,6 +407,76 @@
     });
   }
 
+  /* ——— «Островные сцены»: иллюстрации внутри повествования ——— */
+
+  function sceneMap() {
+    var map = {};
+    (state.scenes || []).forEach(function (s) { map[s.id] = s; });
+    return map;
+  }
+
+  /** HTML фигуры сцены; если изображение ещё не готово — тихий слот-заглушка. */
+  function sceneFigHtml(scene) {
+    var img = scene.files && scene.files.web;
+    var caption = scene.caption || scene.title;
+    if (!img) {
+      return '<figure class="scene-fig scene-fig--pending" data-scene="' + esc(scene.id) + '">' +
+        '<div class="scene-fig__slot" aria-hidden="true"></div>' +
+        '<figcaption>Иллюстрация готовится: «' + esc(scene.title) + '»</figcaption>' +
+        '</figure>';
+    }
+    return '<figure class="scene-fig scene-fig--' + esc(scene.kind || 'byt') + '" data-scene="' + esc(scene.id) + '">' +
+      '<img src="assets/scenes/' + esc(img) + '" alt="' + esc(scene.title) + '" loading="lazy" decoding="async">' +
+      '<figcaption>' + esc(caption) + '</figcaption>' +
+      '</figure>';
+  }
+
+  /**
+   * Маркеры [ИЛЛЮСТРАЦИЯ: id] в тексте главы превращаются в фигуры.
+   * Маркер без известной сцены остаётся редакционной пометкой — ничего не теряется.
+   */
+  function enhanceSceneFigures() {
+    if (!state.scenes || !state.scenes.length) return;
+    var map = sceneMap();
+    doc.querySelectorAll('.chapter__body .ed').forEach(function (span) {
+      var m = /^\[ИЛЛЮСТРАЦИЯ:\s*([\w-]+)\s*\]$/.exec(span.textContent || '');
+      if (!m) return;
+      var scene = map[m[1]];
+      if (!scene) return;
+      var holder = doc.createElement('div');
+      holder.innerHTML = sceneFigHtml(scene);
+      var fig = holder.firstElementChild;
+      var p = span.parentNode;
+      if (p && p.tagName === 'P' && p.children.length === 1 && (p.textContent || '').trim() === span.textContent.trim()) {
+        p.parentNode.replaceChild(fig, p);
+      } else {
+        p.replaceChild(fig, span);
+      }
+    });
+  }
+
+  /**
+   * Сцены с привязкой к разделу или к соседней главе (без маркера в тексте):
+   * вставляются в заданную точку и никогда не дублируются.
+   */
+  function placeManifestFigures() {
+    (state.scenes || []).forEach(function (scene) {
+      var place = scene.place || {};
+      if (place.mode !== 'part' && place.mode !== 'chapter') return;
+      if (doc.querySelector('[data-scene="' + scene.id + '"]')) return;
+      var html = sceneFigHtml(scene);
+      if (place.mode === 'part' && place.position === 'open') {
+        var host = $(HOSTS[place.part]);
+        if (host) host.insertAdjacentHTML('afterbegin', html);
+        return;
+      }
+      var el = place.chapter && doc.getElementById(place.chapter);
+      if (!el) return;
+      if (place.position === 'before') el.insertAdjacentHTML('beforebegin', html);
+      else if (place.position === 'after') el.insertAdjacentHTML('afterend', html);
+    });
+  }
+
   /* ——— Карточки-тизеры (телефон) ——— */
 
   /**
@@ -431,11 +530,16 @@
     picks = picks.slice(0, 2);
 
     prodHost.innerHTML = picks.map(function (ch) {
+      var seasonBit = '';
+      if (window.SeasonLabels && state.seasons) {
+        var s = window.SeasonLabels.shortLabel(state.seasons, ch.id);
+        if (s) seasonBit = ' · ' + s;
+      }
       return '<article class="teaser teaser--product">' +
         '<a class="teaser__link" href="#' + esc(ch.id) + '">' +
           '<div class="teaser__art"><img src="assets/illustrations/' + esc(ch.illustration) +
             '" alt="" loading="lazy" decoding="async"></div>' +
-          '<p class="teaser__kicker">' + esc(partTitleFor(ch.id)) + ' · продукт</p>' +
+          '<p class="teaser__kicker">' + esc(partTitleFor(ch.id)) + ' · продукт' + esc(seasonBit) + '</p>' +
           '<h3 class="teaser__title">' + esc(ch.title) + '</h3>' +
           '<p class="teaser__text">' + esc(shorten(ch.abstract, 90)) + '</p>' +
           '<span class="teaser__go">Читать историю <i aria-hidden="true"></i></span>' +
@@ -669,10 +773,11 @@
     return out + '</dl>';
   }
 
-  function seasonBlockHtml(b, compact) {
+  function seasonBlockHtml(b, compact, idPrefix) {
     var on = {};
     (b.range || []).forEach(function (m) { on[m] = true; });
-    return '<div class="season-block">' +
+    var idAttr = idPrefix ? ' id="' + esc(idPrefix + b.id) + '"' : '';
+    return '<div class="season-block"' + idAttr + '>' +
       '<h3>' + esc(b.title) + '</h3>' +
       '<p class="months">' + esc(b.months) + '</p>' +
       (compact ? '' :
@@ -700,11 +805,11 @@
       html += '<p class="reference__note">' + esc(state.seasons.note) + '</p>';
       html += '<p class="reference__note">' + esc(state.seasons.marketNote) + '</p>';
       html += '<div class="season-list">' + state.seasons.blocks.map(function (b) {
-        return seasonBlockHtml(b, true);
+        return seasonBlockHtml(b, true, 'season-block-');
       }).join('') + '</div>';
       if (state.seasons.notScheduled) {
         var ns = state.seasons.notScheduled;
-        html += '<div class="season-block">' +
+        html += '<div class="season-block" id="season-block-not-scheduled">' +
           '<h3>' + esc(ns.title) + '</h3>' +
           '<p class="season-block__lead">' + esc(ns.note) + '</p>' +
           '<ul class="season-block__chapters">' + ns.chapters.filter(function (id) { return state.chapters[id]; })
@@ -821,6 +926,10 @@
         var meta = [r.part];
         if (r.ch.category && CAT_LABEL[r.ch.category]) meta.push(CAT_LABEL[r.ch.category]);
         if (r.ch.region) meta.push(r.ch.region);
+        if (window.SeasonLabels && state.seasons) {
+          var s = window.SeasonLabels.shortLabel(state.seasons, r.ch.id);
+          if (s) meta.push(s);
+        }
         return '<li><a href="' + href(r.ch.id) + '">' +
           '<span class="r-title">' + esc(r.ch.title) +
           (hasNote(r.ch) ? ' <span class="r-note" title="есть заметка шефа">↗</span>' : '') + '</span>' +
@@ -848,7 +957,7 @@
     html += '<div class="cal__legend">' + (state.seasons.tracks || []).map(function (t) {
       return '<span class="cal__legend-row"><b>' + esc(t.title) + '</b>' + esc(t.hint) + '</span>';
     }).join('') + '</div>';
-    state.seasons.blocks.forEach(function (b) { html += seasonBlockHtml(b); });
+    state.seasons.blocks.forEach(function (b) { html += seasonBlockHtml(b, false, 'cal-block-'); });
     els.seasonCal.innerHTML = html;
   }
 
@@ -1243,6 +1352,12 @@
       .catch(function () { return null; });
   }
 
+  function loadScenes() {
+    return fetch(CONFIG.scenesUrl || 'content/scenes.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+
   function openFromHash() {
     var hash = location.hash.slice(1);
     if (hash.indexOf('note-') === 0) {
@@ -1272,10 +1387,12 @@
         return r.json();
       }),
       loadSeasons(),
+      loadScenes(),
     ])
       .then(function (res) {
         state.book = res[0];
         state.seasons = res[1];
+        state.scenes = (res[2] && res[2].scenes) || null;
         (state.book.chapters || []).forEach(function (ch) {
           state.chapters[ch.id] = ch;
           if (ch.story || ch.practical) ch.__prepared = true;
@@ -1283,6 +1400,8 @@
 
         renderContents();
         renderChapters();
+        placeManifestFigures();
+        enhanceSceneFigures();
         renderTeasers();
         renderFind();
         renderSeason();

@@ -26,4 +26,7 @@ window.BOOK_CONFIG = {
 
   /** Путь к сезонным ориентирам. */
   seasonsUrl: 'content/seasons.json',
+
+  /** Путь к манифесту «островных сцен» (бытовая хроника и природные зарисовки). */
+  scenesUrl: 'content/scenes.json',
 };

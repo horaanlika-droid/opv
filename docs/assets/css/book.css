@@ -2436,6 +2436,88 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
   .tabbar, .teasers { display: none !important; }
 }
 
+/* ——— Сезонная отметка и продуктовая мета ———
+   Ненавязчивый информационный слой у заголовка главы: редакционная
+   типографика, а не бейдж. Тонкая линия, приглушённый цвет, без плашек. */
+
+.chapter__product {
+  margin-top: 10px;
+  font-family: var(--display);
+  font-size: 15px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.season-mark {
+  margin-top: 6px;
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ochre);
+}
+.season-mark a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--ochre) 35%, transparent);
+}
+.season-mark a:hover { border-bottom-color: var(--ochre); }
+.season-mark__months {
+  margin-left: .55em;
+  font-style: normal;
+  font-size: 13px;
+  letter-spacing: .04em;
+  color: var(--ink-mute);
+}
+.season-mark--unknown {
+  font-size: 14px;
+  color: var(--ink-mute);
+}
+.season-mark--unknown a { border-bottom-color: transparent; }
+
+/* ——— «Островные сцены»: иллюстрации внутри повествования ——— */
+
+.scene-fig {
+  margin: 34px auto;
+  max-width: 620px;
+}
+.scene-fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--paper-deep);
+  background: var(--paper-lift);
+}
+.scene-fig figcaption {
+  margin-top: 10px;
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+  text-align: center;
+}
+.scene-fig--sketch,
+.scene-fig--naturalist {
+  max-width: 420px;
+}
+.scene-fig--pending .scene-fig__slot {
+  min-height: 120px;
+  border: 1px dashed var(--paper-deep);
+  background:
+    repeating-linear-gradient(-45deg, transparent 0 10px, rgba(109, 125, 126, .06) 10px 11px);
+}
+.scene-fig--pending figcaption {
+  font-style: normal;
+  font-size: 13px;
+}
+
+/* Якоря сезонного календаря: отметка продукта ведёт к нужному блоку. */
+.season-block {
+  scroll-margin-top: 96px;
+}
+
 @media print {
   .tabbar, .teasers { display: none !important; }
 }
