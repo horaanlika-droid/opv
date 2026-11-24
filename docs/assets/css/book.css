@@ -2228,11 +2228,11 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
   .bar { display: none; }
   .front { padding-top: 5vh; }
   :root { --tabbar-h: 62px; }
-  body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+  body { padding-bottom: calc(var(--tabbar-h) + var(--voicebar-h, 0px) + env(safe-area-inset-bottom, 0px)); }
   .foot { padding-bottom: calc(var(--tabbar-h) + 24px); }
   .scene { height: calc(100vh + 300vh); }
   /* Панели не должны наезжать на бар. */
-  .panel__inner { padding-bottom: calc(34px + var(--tabbar-h)); }
+  .panel__inner { padding-bottom: calc(34px + var(--tabbar-h) + var(--voicebar-h, 0px)); }
   .sheet__foot { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
 
   /* ——— Карточки-тизеры ——— */
@@ -2426,7 +2426,7 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
   .teaser--season .teaser__text { color: var(--ink-soft); }
 
   /* Первый блок после сцены не должен «прилипать» к барм. */
-  .part { scroll-margin-top: 0; scroll-margin-bottom: var(--tabbar-h); }
+  .part { scroll-margin-top: 0; scroll-margin-bottom: calc(var(--tabbar-h) + var(--voicebar-h, 0px)); }
 }
 
 @media (min-width: 821px) {
@@ -2569,7 +2569,7 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
     position: fixed;
     left: 0;
     right: 0;
-    bottom: var(--tabbar-h, 58px);
+    bottom: calc(var(--tabbar-h, 58px) + var(--voicebar-h, 0px));
     z-index: 94;
     display: flex;
     align-items: center;
@@ -2606,54 +2606,290 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
   .tabbar, .teasers, .readout { display: none !important; }
 }
 
-/* ——— Озвучка главы: плеер под открытием ——— */
+/* ——— Озвучка: пилюля главы и постоянный плеер ——— */
+
+/* Ползунки книги: тонкая линия, маленький «печатный» бегунок. */
+.player__seek,
+.voicebar__seek,
+.voicebar__pop input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.player__seek::-webkit-slider-runnable-track,
+.voicebar__seek::-webkit-slider-runnable-track,
+.voicebar__pop input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  background: rgba(34, 49, 52, 0.18);
+  border-radius: 2px;
+}
+.player__seek::-moz-range-track,
+.voicebar__seek::-moz-range-track,
+.voicebar__pop input[type="range"]::-moz-range-track {
+  height: 3px;
+  background: rgba(34, 49, 52, 0.18);
+  border-radius: 2px;
+}
+.player__seek::-webkit-slider-thumb,
+.voicebar__seek::-webkit-slider-thumb,
+.voicebar__pop input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 1px solid var(--paper);
+}
+.player__seek::-moz-range-thumb,
+.voicebar__seek::-moz-range-thumb,
+.voicebar__pop input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 1px solid var(--paper);
+}
+.player__seek:disabled,
+.voicebar__seek:disabled,
+.voicebar__pop input[type="range"]:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Пилюля под открытием главы: вход в озвучку этой главы. */
 .chapter__player {
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 26rem;
+  max-width: 30rem;
   margin: 1.2rem 0 0.4rem;
-  padding: 0.55rem 0.9rem;
+  padding: 0.5rem 0.9rem;
   border: 1px solid rgba(34, 49, 52, 0.16);
   border-radius: 999px;
   background: var(--paper-lift);
+  font-family: var(--text);
 }
 .player__btn {
   flex: none;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  padding: 0;
   border-radius: 50%;
   border: 1px solid rgba(34, 49, 52, 0.28);
   background: var(--paper);
   color: var(--ink);
-  font-size: 0.95rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 .player__btn:hover { background: var(--paper-deep); }
-.player__bar {
-  flex: 1;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(34, 49, 52, 0.16);
-  cursor: pointer;
+.player__btn.is-playing {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
 }
-.player__fill {
-  height: 100%;
-  width: 0;
-  border-radius: 2px;
-  background: var(--ink-soft);
-}
-.player__count {
+.player__seek { flex: 1; min-width: 56px; }
+.player__time {
   flex: none;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
   color: var(--ink-soft);
   white-space: nowrap;
 }
+.player__count {
+  flex: none;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+/* Постоянный плеер: тонкая полоса у нижнего края. Не перекрывает текст —
+   body получает запас снизу (voicebar-on), на телефоне плеер стоит
+   над нижним баром разделов, в зоне большого пальца. */
+.voicebar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 96;
+  background: rgb(248 243 228 / 94%);
+  border-top: 1px solid rgb(221 210 182 / 70%);
+  backdrop-filter: blur(14px) saturate(1.06);
+  font-family: var(--text);
+}
+.voicebar[hidden] { display: none; }
+body.voicebar-on { --voicebar-h: 46px; padding-bottom: var(--voicebar-h); }
+.voicebar__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(10px, 2vw, 18px);
+}
+.voicebar__btn {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+.voicebar__btn:hover { background: var(--paper-deep); }
+.voicebar__btn:disabled { opacity: 0.35; cursor: default; }
+.voicebar__btn--play {
+  width: 38px;
+  height: 38px;
+  border-color: rgba(34, 49, 52, 0.3);
+  background: var(--paper);
+}
+.voicebar__btn--play.is-playing {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.voicebar__rate {
+  width: auto;
+  min-width: 42px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border-color: var(--rule);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.voicebar__mid {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.voicebar__title {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.voicebar__line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.voicebar__seek { flex: 1; min-width: 60px; }
+.voicebar__time {
+  flex: none;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+.voicebar__pop {
+  position: absolute;
+  right: clamp(10px, 2vw, 18px);
+  bottom: calc(100% + 10px);
+  width: min(320px, calc(100vw - 24px));
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--paper-lift);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px -30px rgb(30 40 40 / 70%);
+}
+.voicebar__pop[hidden] { display: none; }
+.voicebar__slider,
+.voicebar__amb {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.voicebar__amb { grid-template-columns: 84px auto 1fr; }
+.voicebar__toggle,
+.voicebar__sync {
+  font-family: var(--text);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.voicebar__toggle[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.voicebar__toggle:disabled { opacity: 0.45; cursor: default; }
+.voicebar__sync {
+  justify-self: start;
+  border-style: dashed;
+  background: none;
+}
+.voicebar__sync.is-on {
+  border-style: solid;
+  border-color: var(--ochre);
+  color: var(--clay);
+}
+.voicebar__hint {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--ink-mute);
+}
+@media (max-width: 820px) {
+  body.voicebar-on { --voicebar-h: 52px; }
+  .voicebar { bottom: calc(var(--tabbar-h, 62px) + env(safe-area-inset-bottom, 0px)); }
+  .voicebar__row { height: 52px; gap: 4px; padding: 0 8px; }
+  .voicebar__btn { width: 36px; height: 36px; }
+  .voicebar__title { font-size: 10px; letter-spacing: 0.07em; }
+  .voicebar__time { font-size: 10.5px; }
+  .voicebar__pop { right: 8px; left: 8px; width: auto; }
+}
+
+/* Подсветка читаемого под голос абзаца — по желанию, мягко, без автопрокрутки. */
+.chapter__body > p.is-audible {
+  background: linear-gradient(90deg, rgb(169 127 77 / 15%) 0%, rgb(169 127 77 / 0%) 82%);
+  box-shadow: inset 2px 0 0 var(--ochre);
+  transition: background 0.5s var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter__body > p.is-audible { transition: none; }
+}
 @media print {
-  .chapter__player { display: none; }
+  .chapter__player,
+  .voicebar { display: none !important; }
 }
 
 /* ——— Страницы глав: одна глава — одна страница ——— */

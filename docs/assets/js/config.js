@@ -32,4 +32,7 @@ window.BOOK_CONFIG = {
 
   /** Путь к манифесту озвучки глав (фрагменты mp3 в assets/audio/narration). */
   narrationUrl: 'content/narration.json',
+
+  /** Путь к манифесту звуковых ландшафтов разделов (assets/audio/*.mp3). */
+  soundscapeUrl: 'content/soundscape.json',
 };
