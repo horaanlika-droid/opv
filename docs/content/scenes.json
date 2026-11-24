@@ -351,6 +351,45 @@
       "caption": "Под поверхностью",
       "files": {},
       "note": "Двойное назначение: текст главы и слой «Море» центральной сцены."
+    },
+    {
+      "id": "opener-filosofiya",
+      "title": "Открытие главы «Философия»",
+      "chapter": "filosofiya",
+      "place": {
+        "mode": "opener",
+        "chapter": "filosofiya"
+      },
+      "kind": "byt",
+      "format": "открытие главы (opener)",
+      "description": "Сборная сцена главы: соседский обмен через забор, мешок устриц, крабы в тазу, сопки и лодка у берега — как в макете мобильной книги.",
+      "source": "Макет автора (assets/reference/app-chapter-mockup.png); сюжеты — сцены 01–03 главы «Философия»; художественная реконструкция.",
+      "status": "needs-check",
+      "caption": "Двор, устрицы, крабы",
+      "origin": "Пересоздано по макету автора от 24.11.2026 (IMG_7468). Требует проверки: для печати нужен полноформатный исходник.",
+      "files": {
+        "master": "assets/scenes/opener-filosofiya.png",
+        "web": "opener-filosofiya.webp"
+      }
+    },
+    {
+      "id": "opener-ostrov",
+      "title": "Открытие главы «Остров как состояние»",
+      "chapter": "ostrov-kak-sostoyanie",
+      "place": {
+        "mode": "opener",
+        "chapter": "ostrov-kak-sostoyanie"
+      },
+      "kind": "naturalist",
+      "format": "открытие главы (opener)",
+      "description": "Вертикальный спуск в одной композиции: сопки в тумане, лесные склоны, речная долина, каменистый берег и намёк на подводный мир — маршрут главы.",
+      "source": "Текст главы («Остров как состояние») и пять природных зон книги; концепт в единой акватехнике.",
+      "status": "test",
+      "caption": "Спуск по острову",
+      "files": {
+        "master": "assets/scenes/opener-ostrov.png",
+        "web": "opener-ostrov.webp"
+      }
     }
   ]
 }

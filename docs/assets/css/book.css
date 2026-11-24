@@ -2433,7 +2433,7 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
 }
 
 @media (min-width: 821px) {
-  .tabbar, .teasers { display: none !important; }
+  .tabbar, .teasers, .readout { display: none !important; }
 }
 
 /* ——— Сезонная отметка и продуктовая мета ———
@@ -2513,11 +2513,96 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
   font-size: 13px;
 }
 
+/* ——— Открытие главы по макету мобильной книги ———
+   Номер, крупный заголовок, авторский лид, сцена и вынесенная цитата. */
+
+.chapter__lead {
+  margin-top: 14px;
+  max-width: 34em;
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.chapter__opener {
+  position: relative;
+  margin-top: 26px;
+}
+.scene-fig--opener {
+  max-width: none;
+  margin: 0;
+}
+.scene-fig--opener img {
+  border: none;
+}
+.chapter__quote {
+  margin: 18px 0 0;
+  padding: 14px 0 0;
+  max-width: 30em;
+  border-top: 1px solid var(--paper-deep);
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+@media (min-width: 900px) {
+  .chapter__opener {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: end;
+  }
+  .chapter__quote {
+    margin: 0 0 18px;
+    padding: 14px 0 0;
+  }
+}
+
+/* ——— Прогресс чтения над нижним баром ——— */
+
+.readout {
+  display: none;
+}
+@media (max-width: 820px) {
+  .readout {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--tabbar-h, 58px);
+    z-index: 94;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px 6px;
+    background: linear-gradient(180deg, transparent, rgb(248 243 230 / 92%) 45%);
+  }
+  .readout__track {
+    flex: 1;
+    height: 2px;
+    background: var(--paper-deep);
+  }
+  .readout__fill {
+    height: 100%;
+    background: var(--ink-soft);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  .readout__label {
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: .06em;
+    color: var(--ink-mute);
+  }
+}
+
 /* Якоря сезонного календаря: отметка продукта ведёт к нужному блоку. */
 .season-block {
   scroll-margin-top: 96px;
 }
 
 @media print {
-  .tabbar, .teasers { display: none !important; }
+  .tabbar, .teasers, .readout { display: none !important; }
 }

@@ -142,6 +142,8 @@
     footLine: $('foot-line'),
     referenceSeason: $('reference-season'),
     referenceSources: $('reference-sources'),
+    readFill: $('readout-fill'),
+    readLabel: $('readout-label'),
     note: $('note'),
     notePanel: $('note-panel'),
     noteScroll: $('note-scroll'),
@@ -310,6 +312,11 @@
         '<figcaption>Иллюстрация к главе «' + esc(ch.title) + '». Акварель и тушь.</figcaption></figure>'
       : '';
 
+    // Открытие главы по макету мобильной книги: номер, заголовок, авторский
+    // лид, крупная сцена и вынесенная цитата. Нет авторской копии — нет блока.
+    var opener = openerFor(ch);
+    var lead = ch.lead ? '<p class="chapter__lead">' + esc(ch.lead) + '</p>' : '';
+
     var prevId = partIds[index - 1];
     var nextId = partIds[index + 1];
     var nav = '<nav class="chapter__nav" aria-label="Главы раздела">';
@@ -330,12 +337,14 @@
     return '' +
       '<article class="chapter' + (fig ? ' chapter--has-fig' : '') + '" id="' + esc(ch.id) + '" data-chapter="' + esc(ch.id) + '">' +
         '<header class="chapter__head">' +
-          '<p class="chapter__num">' + esc(partTitleFor(ch.id)) + ' · ' + pad2(index + 1) + '</p>' +
+          '<p class="chapter__num">Глава ' + pad2(chapterNo[ch.id] || (index + 1)) + '</p>' +
           '<h2 class="chapter__title">' + esc(ch.title) + '</h2>' +
+          lead +
           productMetaHtml(ch) +
           (meta.isDraft ? '<p class="chapter__meta">Рабочий черновик · редакционные пометки сохранены</p>' : '') +
           noteLinkHtml(ch) +
         '</header>' +
+        opener +
         '<div class="chapter__layout">' +
           fig +
           '<div class="chapter__body">' + window.MD.render(story) + '</div>' +
@@ -349,6 +358,40 @@
       if (PARTS[i].chapters.indexOf(id) >= 0) return PARTS[i].title;
     }
     return 'Книга';
+  }
+
+  /** Сквозная нумерация глав в порядке чтения (как в «Содержании»). */
+  var chapterNo = {};
+  function numberChapters() {
+    var n = 0;
+    chapterNo = {};
+    PARTS.forEach(function (p) {
+      p.chapters.forEach(function (id) {
+        if (state.chapters[id]) chapterNo[id] = ++n;
+      });
+    });
+  }
+
+  /**
+   * Открытие главы по макету мобильной книги: крупная сцена и авторская
+   * цитата. Копия (лид и цитата) — только из макета автора; без неё блока нет.
+   */
+  function openerFor(ch) {
+    if (!state.scenes) return '';
+    var scene = null;
+    state.scenes.forEach(function (s) {
+      if (s.place && s.place.mode === 'opener' && s.place.chapter === ch.id && s.files && s.files.web) scene = s;
+    });
+    if (!scene) return '';
+    var quote = ch.quote
+      ? '<blockquote class="chapter__quote">' + esc(ch.quote) + '</blockquote>'
+      : '';
+    return '<div class="chapter__opener">' +
+      '<figure class="scene-fig scene-fig--opener" data-scene="' + esc(scene.id) + '">' +
+        '<img src="assets/scenes/' + esc(scene.files.web) + '" alt="' + esc(scene.title) + '" loading="lazy" decoding="async">' +
+      '</figure>' +
+      quote +
+      '</div>';
   }
 
   /**
@@ -368,6 +411,7 @@
   };
 
   function renderChapters() {
+    numberChapters();
     var reference = PARTS.filter(function (p) { return p.reference; })[0];
     var refIds = reference
       ? reference.chapters.filter(function (id) { return state.chapters[id]; })
@@ -590,6 +634,27 @@
         else t.removeAttribute('aria-current');
       }
     });
+  }
+
+  /**
+   * Тихий индикатор чтения над нижним баром: полоса прокрутки и
+   * «глава N / всего» — как «1 / 12» в макете мобильной книги.
+   */
+  function updateReadout() {
+    if (!els.readFill) return;
+    var docH = (doc.documentElement.scrollHeight - window.innerHeight) || 1;
+    var p = Math.min(1, Math.max(0, (window.scrollY || 0) / docH));
+    els.readFill.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+    if (!els.readLabel) return;
+    var total = Object.keys(chapterNo).length;
+    var probe = window.innerHeight * 0.45;
+    var current = null;
+    doc.querySelectorAll('article.chapter').forEach(function (art) {
+      if (art.getBoundingClientRect().top <= probe) current = art;
+    });
+    els.readLabel.textContent = (current && chapterNo[current.id])
+      ? pad2(chapterNo[current.id]) + ' / ' + pad2(total)
+      : '— / ' + pad2(total);
   }
 
   /* ——— «Заметка шефа» ——— */
@@ -1077,6 +1142,7 @@
         markActiveTab.t = requestAnimationFrame(function () {
           markActiveTab.t = 0;
           markActiveTab();
+          updateReadout();
         });
       }
     }

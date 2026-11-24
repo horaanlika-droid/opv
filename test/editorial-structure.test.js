@@ -189,6 +189,22 @@ test('«Островные сцены»: метаданные полные, ст
       assert.ok(!s.files || !s.files.web, `${s.id}: концепт без готового изображения`);
     }
   }
-  const ready = manifest.scenes.filter((s) => s.files && s.files.web).length;
+  const ready = manifest.scenes.filter((s) => s.files && s.files.web && s.place.mode !== 'opener').length;
   assert.equal(ready, 12, 'все двенадцать бытовых сцен раскадровки в книге');
+});
+
+test('открытия глав: копия авторская (из макета), изображения на месте', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'content', 'scenes.json'), 'utf8'));
+  const openers = manifest.scenes.filter((s) => s.place && s.place.mode === 'opener');
+  assert.ok(openers.length >= 1, 'есть хотя бы одно открытие главы');
+  for (const s of openers) {
+    assert.ok(s.chapter, `${s.id}: привязано к главе`);
+    assert.ok(s.files && s.files.web, `${s.id}: изображение открытия на месте`);
+  }
+  // Текст открытия — только из макета автора; других глав с выдуманной копией нет.
+  const leads = book.chapters.filter((c) => c.lead || c.quote);
+  assert.equal(leads.length, 1, 'пока только «Философия» несёт копию макета');
+  assert.equal(leads[0].id, 'filosofiya');
+  assert.equal(leads[0].lead, 'Сахалинская кухня — это не про единственный рецепт, а про людей, море и остров.');
+  assert.equal(leads[0].quote, 'Здесь пересекаются разные культуры, меняются рецепты, а привычные продукты обретают новый смысл.');
 });

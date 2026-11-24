@@ -235,6 +235,18 @@ function invertMap(map) {
   return out;
 }
 
+/**
+ * Текст открытия главы — только авторский, из макета мобильной книги
+ * (assets/reference/app-chapter-mockup.png). Ничего не сочиняем: нет авторской
+ * строки — поля остаются пустыми и в макете не показываются.
+ */
+const OPENER_COPY_BY_CHAPTER = {
+  filosofiya: {
+    lead: 'Сахалинская кухня — это не про единственный рецепт, а про людей, море и остров.',
+    quote: 'Здесь пересекаются разные культуры, меняются рецепты, а привычные продукты обретают новый смысл.',
+  },
+};
+
 async function buildIllustrations() {
   let sharp = null;
   try {
@@ -337,6 +349,11 @@ async function main() {
     ch.environment = envOf[ch.id] || null;
     ch.category = catOf[ch.id] || null;
     ch.region = REGION_BY_CHAPTER[ch.id] || null;
+    const openerCopy = OPENER_COPY_BY_CHAPTER[ch.id];
+    if (openerCopy) {
+      ch.lead = openerCopy.lead;
+      ch.quote = openerCopy.quote;
+    }
     // Повествование дублируем только там, где оно отличается от полного текста:
     // иначе файл книги зря тяжелеет в два раза.
     if (split.hasPractical) ch.story = split.story;
