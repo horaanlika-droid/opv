@@ -65,13 +65,15 @@
     },
   ];
 
-  /** Пять уровней сцены: подписи и то, куда ведёт действие. */
+  /** Семь остановок спуска: небо с главой-открытием → зоны → дно. */
   var LEVELS = [
+    { n: '—', title: 'Философия', target: 'filosofiya' },
     { n: 'I', title: 'Горы и сопки', target: 'ostrov' },
     { n: 'II', title: 'Лес', target: 'les' },
     { n: 'III', title: 'Реки и долины', target: 'more' },
     { n: 'IV', title: 'Побережье', target: 'more' },
     { n: 'V', title: 'Море', target: 'more' },
+    { n: 'VI', title: 'Глубина', target: 'more' },
   ];
 
   /** Человеческие подписи для фильтров. Пустых категорий не бывает: их нет в данных. */
@@ -92,12 +94,12 @@
 
   /** Среда продукта → уровень центральной сцены. */
   var ENV_LEVEL = {
-    mountains: 1,
-    les: 2,
-    les_dich: 2,
-    river: 3,
-    coast: 4,
-    more: 5,
+    mountains: 2,
+    les: 3,
+    les_dich: 3,
+    river: 4,
+    coast: 5,
+    more: 6,
   };
 
   var NOTE_LABEL = {
@@ -559,88 +561,35 @@
   /* ——— Карточки-тизеры (телефон) ——— */
 
   /**
-   * Титул на телефоне показывает не только туман: сразу видно, что внутри —
-   * глава-открытие, два продукта и сезонный календарь. Всё это ссылки в те же
-   * места книги, новых сущностей не появляется.
+   * Остановки спуска ведут в главы книги: карточка в каждой зоне —
+   * та же глава, что и в «Содержании», с её вводным абзацем из book.json.
+   * Новых сущностей не появляется: заголовок, раздел и абзац — из данных.
    */
-  function renderTeasers() {
-    var leadHost = $('teaser-lead');
-    var prodHost = $('teaser-products');
-    var seasonHost = $('teaser-season');
-    if (!leadHost || !prodHost || !seasonHost) return;
-
-    var opening = state.chapters['filosofiya'];
-    if (opening) {
-      leadHost.innerHTML =
-        '<a class="teaser__link" href="#' + esc(opening.id) + '">' +
-          '<p class="teaser__kicker">С чего начинается</p>' +
-          '<h2 class="teaser__title">' + esc(opening.title) + '</h2>' +
-          '<p class="teaser__text">' + esc(shorten(opening.abstract, 150)) + '</p>' +
-          '<span class="teaser__go">Читать главу <i aria-hidden="true"></i></span>' +
-        '</a>' +
-        // У главы-открытия нет видовой таблицы — и подставлять чужую рыбу
-        // нельзя. Вместо иллюстрации здесь акварельный разлив (CSS): он
-        // ничего не изображает и ничего не выдумывает.
-        '<div class="teaser__wash" aria-hidden="true"></div>';
-      leadHost.hidden = false;
-    }
-
-    // Два продукта из разных разделов: так карточки показывают диапазон книги,
-    // а не две соседние рыбы. Берём первые главы с готовой видовой таблицей —
-    // когда появятся новые иллюстрации, выбор обновится сам.
-    var picks = [];
-    ['more', 'les', 'dich'].forEach(function (partId) {
-      var part = PARTS.filter(function (p) { return p.id === partId; })[0];
-      if (!part) return;
-      var first = part.chapters
-        .map(function (id) { return state.chapters[id]; })
-        .filter(function (ch) { return ch && ch.illustration; })[0];
-      if (first) picks.push(first);
-    });
-    // Если готовых таблиц меньше двух (иллюстрации ещё рисуются), добираем
-    // из «Моря» — но никогда не показываем одну и ту же главу дважды.
-    if (picks.length < 2) {
-      PARTS[1].chapters.forEach(function (id) {
-        if (picks.length >= 2) return;
-        var ch = state.chapters[id];
-        if (ch && ch.illustration && picks.indexOf(ch) < 0) picks.push(ch);
-      });
-    }
-    picks = picks.slice(0, 2);
-
-    prodHost.innerHTML = picks.map(function (ch) {
-      var seasonBit = '';
-      if (window.SeasonLabels && state.seasons) {
-        var s = window.SeasonLabels.shortLabel(state.seasons, ch.id);
-        if (s) seasonBit = ' · ' + s;
+  function renderSceneChapters() {
+    doc.querySelectorAll('.level__chapter[data-chapter]').forEach(function (card) {
+      var ch = state.chapters[card.getAttribute('data-chapter')];
+      if (!ch) return;
+      card.setAttribute('href', '#' + ch.id);
+      var art = card.querySelector('.level__chapter-art');
+      if (art) {
+        if (ch.illustration) {
+          art.hidden = false;
+          var img = art.querySelector('img');
+          img.setAttribute('src', 'assets/illustrations/' + ch.illustration);
+        } else {
+          art.hidden = true;
+        }
       }
-      return '<article class="teaser teaser--product">' +
-        '<a class="teaser__link" href="#' + esc(ch.id) + '">' +
-          '<div class="teaser__art"><img src="assets/illustrations/' + esc(ch.illustration) +
-            '" alt="" loading="lazy" decoding="async"></div>' +
-          '<p class="teaser__kicker">' + esc(partTitleFor(ch.id)) + ' · продукт' + esc(seasonBit) + '</p>' +
-          '<h3 class="teaser__title">' + esc(ch.title) + '</h3>' +
-          '<p class="teaser__text">' + esc(shorten(ch.abstract, 90)) + '</p>' +
-          '<span class="teaser__go">Читать историю <i aria-hidden="true"></i></span>' +
-        '</a>' +
-        (hasNote(ch)
-          ? '<a class="teaser__note" href="#note-' + esc(ch.id) + '" data-note="' + esc(ch.id) + '">' +
-              '<span class="teaser__note-k">Заметка шефа</span>' +
-              '<span class="teaser__note-d">Обработка · Техника · Авторский рецепт</span>' +
-              '<span class="teaser__note-i" aria-hidden="true"></span>' +
-            '</a>'
-          : '') +
-      '</article>';
-    }).join('');
-
-    var count = state.seasons ? state.seasons.blocks.length : 0;
-    seasonHost.innerHTML =
-      '<p class="teaser__kicker">Сезонный календарь</p>' +
-      '<h3 class="teaser__title">Когда и что на Сахалине</h3>' +
-      '<p class="teaser__text">' + (count ? count + ' сезонных периода: природный сезон, сбор и промысел, рынок — без выдуманных дат.' : 'Сезонные ориентиры из рукописи.') + '</p>' +
-      '<span class="teaser__go">Открыть календарь <i aria-hidden="true"></i></span>';
-
-    markActiveTab();
+      var kicker = card.querySelector('.level__chapter-kicker');
+      if (kicker) {
+        kicker.textContent = ch.id === 'filosofiya' ? 'С чего начинается' : partTitleFor(ch.id);
+      }
+      var title = card.querySelector('.level__chapter-title');
+      if (title) title.textContent = ch.title;
+      var text = card.querySelector('.level__chapter-text');
+      if (text) text.textContent = shorten(ch.abstract, 110);
+      card.hidden = false;
+    });
   }
 
   function shorten(text, max) {
@@ -1089,7 +1038,7 @@
 
   function closePanels() { setPanel(null); }
 
-  /* ——— Сцена: параллакс по пяти уровням ——— */
+  /* ——— Сцена: параллакс по семи остановкам ——— */
 
   function setupScene() {
     if (!els.scene) return;
@@ -1098,7 +1047,7 @@
 
     els.sceneDots.innerHTML = LEVELS.map(function (l, i) {
       return '<button class="dot" type="button" role="tab" aria-selected="' + (i === 0 ? 'true' : 'false') +
-        '" data-level="' + (i + 1) + '" aria-label="Уровень ' + l.n + ': ' + esc(l.title) + '">' +
+        '" data-level="' + (i + 1) + '" aria-label="Остановка ' + (i + 1) + ' из ' + LEVELS.length + ': ' + esc(l.title) + '">' +
         '<span class="dot__label">' + esc(l.title) + '</span><span class="dot__mark"></span></button>';
     }).join('');
 
@@ -1570,7 +1519,7 @@
         renderChapters();
         placeManifestFigures();
         enhanceSceneFigures();
-        renderTeasers();
+        renderSceneChapters();
         renderFind();
         renderSeason();
         setupScene();

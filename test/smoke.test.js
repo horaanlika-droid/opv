@@ -112,6 +112,22 @@ test('книга: страница собирается в DOM без ошибо
     const chapters = doc.querySelectorAll('article.chapter').length;
     assert.ok(chapters >= 40, `главы на месте (${chapters})`);
 
+    // Сцена-спуск: семь остановок, у каждой карточка своей главы.
+    // Старые карточки-тизеры со стартовой страницы убраны — их роль
+    // перешла к сцене.
+    assert.equal(doc.getElementById('teasers'), null, 'тизеров на старте нет');
+    await waitFor(() => doc.querySelectorAll('#scene-text .level').length === 7, 4000);
+    assert.equal(doc.querySelectorAll('#scene-text .level').length, 7, 'семь остановок спуска');
+    assert.equal(doc.querySelectorAll('#scene-dots .dot').length, 7, 'семь точек навигации');
+    const sceneCards = Array.from(doc.querySelectorAll('.level__chapter'));
+    assert.equal(sceneCards.length, 7, 'карточка главы есть у каждой остановки');
+    assert.ok(sceneCards.every((c) => !c.hidden && /^#[a-z0-9-]+$/.test(c.getAttribute('href') || '')),
+      'все карточки разведены и ведут на главы');
+    assert.ok(sceneCards.every((c) => (c.querySelector('.level__chapter-title').textContent || '').length > 0),
+      'заголовки карточек заполнены из book.json');
+    const artCard = doc.querySelector('.level__chapter[data-chapter="koryushka"] .level__chapter-art');
+    assert.ok(artCard && !artCard.hidden, 'у продукта с видовой таблицей есть иллюстрация');
+
     // Постоянный плеер подключён (манифест озвучки загружен).
     await waitFor(() => {
       const bar = doc.getElementById('voicebar');

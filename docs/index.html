@@ -21,6 +21,13 @@
   <link rel="prefetch" href="assets/art/band-coast.webp" as="image">
   <link rel="prefetch" href="assets/art/band-sea.webp" as="image">
   <link rel="prefetch" href="assets/art/band-depth.webp" as="image">
+  <link rel="prefetch" href="assets/art/cut-sky.webp" as="image">
+  <link rel="prefetch" href="assets/art/cut-mountains.webp" as="image">
+  <link rel="prefetch" href="assets/art/cut-forest.webp" as="image">
+  <link rel="prefetch" href="assets/art/cut-river.webp" as="image">
+  <link rel="prefetch" href="assets/art/cut-coast.webp" as="image">
+  <link rel="prefetch" href="assets/art/cut-sea.webp" as="image">
+  <link rel="prefetch" href="assets/art/cut-depth.webp" as="image">
   <link rel="stylesheet" href="assets/css/book.css">
 </head>
 <body class="is-opening">
@@ -243,64 +250,123 @@
       <p class="front__scroll" aria-hidden="true">листайте вниз</p>
     </section>
 
-    <!-- Карточки-тизеры: что читателя ждёт внутри. Показываются на телефоне,
-         на десктопе остаётся сцена и текст подряд. -->
-    <section class="teasers" id="teasers" aria-label="Что в книге">
-      <div class="teasers__inner">
-        <article class="teaser teaser--lead" id="teaser-lead"></article>
-        <div class="teasers__row" id="teaser-products"></div>
-        <a class="teaser teaser--season" href="#seasons" id="teaser-season"></a>
-      </div>
-    </section>
-
-    <!-- Центральная сцена: пять природных уровней внутри главы «Остров». -->
-    <section class="scene" id="scene" aria-label="Сахалин в разрезе: пять природных уровней">
+    <!-- Центральная сцена: спуск от неба к дну — семь остановок,
+         у каждой зоны своя глава книги. -->
+    <section class="scene" id="scene" aria-label="Спуск от неба к дну: семь остановок с главами книги">
       <div class="scene__sticky">
         <div class="scene__layers" aria-hidden="true">
           <div class="layer layer--sky"></div>
+          <img class="layer layer--cut layer--clouds" data-depth="0.10" src="assets/art/cut-sky.webp" alt="" decoding="async">
           <div class="layer layer--mountain" data-depth="0.14"><img src="assets/art/band-mountains.webp" alt="" loading="lazy" decoding="async"></div>
+          <img class="layer layer--cut layer--cut-mtn" data-depth="0.22" src="assets/art/cut-mountains.webp" alt="" loading="lazy" decoding="async">
           <div class="layer layer--forest" data-depth="0.30"><img src="assets/art/band-forest.webp" alt="" loading="lazy" decoding="async"></div>
+          <img class="layer layer--cut layer--cut-forest" data-depth="0.38" src="assets/art/cut-forest.webp" alt="" loading="lazy" decoding="async">
           <div class="layer layer--river" data-depth="0.46"><img src="assets/art/band-river.webp" alt="" loading="lazy" decoding="async"></div>
+          <img class="layer layer--cut layer--cut-river" data-depth="0.54" src="assets/art/cut-river.webp" alt="" loading="lazy" decoding="async">
           <div class="layer layer--coast" data-depth="0.62"><img src="assets/art/band-coast.webp" alt="" loading="lazy" decoding="async"></div>
+          <img class="layer layer--cut layer--cut-coast" data-depth="0.68" src="assets/art/cut-coast.webp" alt="" loading="lazy" decoding="async">
           <div class="layer layer--sea" data-depth="0.76"><img src="assets/art/band-sea.webp" alt="" loading="lazy" decoding="async"></div>
+          <img class="layer layer--cut layer--cut-sea" data-depth="0.83" src="assets/art/cut-sea.webp" alt="" loading="lazy" decoding="async">
           <div class="layer layer--depth" data-depth="0.90"><img src="assets/art/band-depth.webp" alt="" loading="lazy" decoding="async"></div>
+          <img class="layer layer--cut layer--cut-depth" data-depth="0.97" src="assets/art/cut-depth.webp" alt="" loading="lazy" decoding="async">
           <div class="scene__wash" aria-hidden="true"></div>
         </div>
 
         <div class="scene__text" id="scene-text">
+          <article class="level level--sky" data-level="0">
+            <p class="level__num">—</p>
+            <h2 class="level__title">Философия</h2>
+            <p class="level__body">Прежде чем спуститься к сопкам, лесу и воде — верхний свет: как книга смотрит на остров, еду и время. Отсюда виден весь путь вниз — от первого взгляда до дна.</p>
+            <a class="level__chapter" data-chapter="filosofiya" href="#filosofiya" hidden>
+              <span class="level__chapter-art" hidden><img alt="" decoding="async"></span>
+              <span class="level__chapter-copy">
+                <span class="level__chapter-kicker"></span>
+                <span class="level__chapter-title"></span>
+                <span class="level__chapter-text"></span>
+              </span>
+            </a>
+          </article>
           <article class="level" data-level="1">
             <p class="level__num">I</p>
             <h2 class="level__title">Горы и сопки</h2>
             <p class="level__body">Почти по всей длине остров держат два хребта — Западно-Сахалинские горы и Восточно-Сахалинские, где поднимается Лопатина, 1609 метров. Между ними лежит Тымь-Поронайская низменность. Здесь начинается разговор о географии, климате и о том, как остров устроен.</p>
-            <a class="level__go" href="#ostrov">Открыть главу об острове</a>
+            <a class="level__chapter" data-chapter="ostrov-kak-sostoyanie" href="#ostrov-kak-sostoyanie" hidden>
+              <span class="level__chapter-art" hidden><img alt="" decoding="async"></span>
+              <span class="level__chapter-copy">
+                <span class="level__chapter-kicker"></span>
+                <span class="level__chapter-title"></span>
+                <span class="level__chapter-text"></span>
+              </span>
+            </a>
           </article>
           <article class="level" data-level="2">
             <p class="level__num">II</p>
             <h2 class="level__title">Лес</h2>
             <p class="level__body">Тёмнохвойная тайга из ели аянской и пихты сахалинской, пояс каменной берёзы, под ним — курильский бамбучник и папоротники. Ниже — то, за чем в лес идут: черемша, папоротник, ягоды. Лес отдаёт только то, что готов отдать.</p>
-            <a class="level__go" href="#les">Читать раздел «Лес»</a>
+            <a class="level__chapter" data-chapter="cheremsha" href="#cheremsha" hidden>
+              <span class="level__chapter-art" hidden><img alt="" decoding="async"></span>
+              <span class="level__chapter-copy">
+                <span class="level__chapter-kicker"></span>
+                <span class="level__chapter-title"></span>
+                <span class="level__chapter-text"></span>
+              </span>
+            </a>
           </article>
           <article class="level" data-level="3">
             <p class="level__num">III</p>
             <h2 class="level__title">Реки и долины</h2>
             <p class="level__body">Поронай и Тымь — две главные реки острова, 350 и 330 километров. В реки заходит рыба, у рек стоят поселения, в долинах — болота, озёра и луга. Вода здесь — не фон, а дорога и календарь.</p>
-            <a class="level__go" href="#more">К продуктам рек</a>
+            <a class="level__chapter" data-chapter="gorbusha" href="#gorbusha" hidden>
+              <span class="level__chapter-art" hidden><img alt="" decoding="async"></span>
+              <span class="level__chapter-copy">
+                <span class="level__chapter-kicker"></span>
+                <span class="level__chapter-title"></span>
+                <span class="level__chapter-text"></span>
+              </span>
+            </a>
           </article>
           <article class="level" data-level="4">
             <p class="level__num">IV</p>
             <h2 class="level__title">Побережье</h2>
             <p class="level__body">Берег — место встречи суши и моря, где прилив и отлив задают ритм. Галька, камни, плавник, водоросли, прибой. Отсюда начинается промысел — и отсюда же видно, насколько остров мал и насколько открыт.</p>
-            <a class="level__go" href="#more">К продуктам побережья</a>
+            <a class="level__chapter" data-chapter="koryushka" href="#koryushka" hidden>
+              <span class="level__chapter-art" hidden><img alt="" decoding="async"></span>
+              <span class="level__chapter-copy">
+                <span class="level__chapter-kicker"></span>
+                <span class="level__chapter-title"></span>
+                <span class="level__chapter-text"></span>
+              </span>
+            </a>
           </article>
           <article class="level" data-level="5">
             <p class="level__num">V</p>
             <h2 class="level__title">Море</h2>
-            <p class="level__body">Путешествие заканчивается под водой. Гребешок, трепанг, морской ёж, мидии, ламинария — здесь начинается раздел «Море», с которого книга переходит к продуктам.</p>
-            <a class="level__go" href="#more">Читать раздел «Море»</a>
+            <p class="level__body">Дальше от берега вода делается другой: течение, отмели, открытая бухта и глубина, которую не видно. Раздел «Море» начинается здесь — с рыбы, что к холодам подходит ближе.</p>
+            <a class="level__chapter" data-chapter="navaga" href="#navaga" hidden>
+              <span class="level__chapter-art" hidden><img alt="" decoding="async"></span>
+              <span class="level__chapter-copy">
+                <span class="level__chapter-kicker"></span>
+                <span class="level__chapter-title"></span>
+                <span class="level__chapter-text"></span>
+              </span>
+            </a>
+          </article>
+          <article class="level level--deep" data-level="6">
+            <p class="level__num">VI</p>
+            <h2 class="level__title">Глубина</h2>
+            <p class="level__body">Самый низ: дно, по которому ползёт трепанг, лежит гребешок, цепляются морские ёжи и держатся водоросли. Здесь спуск заканчивается — дальше начинается раздел «Море».</p>
+            <a class="level__chapter" data-chapter="grebeshok" href="#grebeshok" hidden>
+              <span class="level__chapter-art" hidden><img alt="" decoding="async"></span>
+              <span class="level__chapter-copy">
+                <span class="level__chapter-kicker"></span>
+                <span class="level__chapter-title"></span>
+                <span class="level__chapter-text"></span>
+              </span>
+            </a>
           </article>
         </div>
 
-        <div class="scene__dots" id="scene-dots" role="tablist" aria-label="Природные уровни"></div>
+        <div class="scene__dots" id="scene-dots" role="tablist" aria-label="Остановки спуска"></div>
       </div>
     </section>
 
