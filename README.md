@@ -120,17 +120,17 @@
 
 ## Шрифты
 
-Гарнитуры — Cormorant Garamond (заголовки), Spectral (текст), Inter (интерфейс), лицензия SIL OFL (`docs/assets/fonts/OFL-*.txt`).
+Типографская система книги — «печатная машинка на натуральной бумаге»: IBM Plex Mono (основной текст, подзаголовки, подписи, полевые заметки, сезонные метки, весь служебный слой) и Cormorant Garamond (крупные заголовки — контраст печатного издания). Обе гарнитуры с полной кириллицей; лицензия SIL OFL (`docs/assets/fonts/OFL-*.txt`).
 
 Fontsource режет шрифты по подмножествам: латиница, кириллица, latin-ext отдельно. Если взять один файл, в книге не будет либо кириллицы, либо цифр и латинских названий видов — и текст начнёт набираться двумя гарнитурами вперемешку. Поэтому `tools/build-fonts.py` склеивает `latin + cyrillic` в один woff2 на начертание и выбрасывает ненужные хвосты (вьетнамский, греческий).
 
 ```bash
 pip install --break-system-packages fonttools brotli
-npm install --no-save --prefix /tmp/fonts @fontsource/cormorant-garamond @fontsource/spectral @fontsource/inter
+npm install --no-save --prefix /tmp/fonts @fontsource/cormorant-garamond @fontsource/ibm-plex-mono
 python3 tools/build-fonts.py
 ```
 
-Итог: 11 начертаний, ~217 КБ, полный набор (кириллица, латиница, цифры, «ёлочки», тире, стрелки).
+Итог: 8 начертаний, ~129 КБ, полный набор (кириллица, латиница, цифры, «ёлочки», тире). Набор без выравнивания по ширине — левое поле естественное; строка ~50 знаков (`--measure: 30em`).
 
 ## Звук
 
