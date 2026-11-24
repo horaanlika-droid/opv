@@ -128,7 +128,7 @@ test('абстракт для поиска не содержит редакци�
   for (const ch of book.chapters) {
     if (!ch.abstract) continue;
     assert.ok(!/\[[^\]]{2,}\]/.test(ch.abstract), `${ch.id}: пометки не попадают в карточку поиска`);
-    assert.ok(!/ЗАМЕТКА АВТОРА|ИСТОЧНИК НУЖЕН|МЕСТО ДЛЯ|ЧЕРНОВИК/.test(ch.abstract),
+    assert.ok(!/ЗАМЕТКА АВТОРА|ИСТОЧНИК НУЖЕН|МЕСТО ДЛЯ|ЧЕРНОВИК|РЕДАКТОРСКАЯ ПОМЕТКА/.test(ch.abstract),
       `${ch.id}: служебные слова не попадают в карточку`);
     assert.ok(!/\|/.test(ch.abstract), `${ch.id}: таблица не попадает в карточку поиска`);
     assert.ok(ch.abstract.length <= 300, `${ch.id}: абстракт короткий`);
