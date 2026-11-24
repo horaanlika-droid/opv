@@ -404,6 +404,32 @@
   }
 
   /**
+   * Пилюля озвучки под открытием главы. Рисует BookVoice (voice.js);
+   * у нечёсаных глав пилюли нет — книга не обещает голоса, которого нет.
+   */
+  function playerFor(ch) {
+    if (!window.BookVoice || !state.narration) return '';
+    return window.BookVoice.render(ch, chapterNo[ch.id] || 0);
+  }
+
+  /** Порядок глав для плеера — тот же, что в «Содержании». */
+  function readingOrder() {
+    var ids = [];
+    PARTS.forEach(function (p) {
+      p.chapters.forEach(function (id) { if (state.chapters[id]) ids.push(id); });
+    });
+    return ids;
+  }
+
+  /** Раздел, в котором лежит глава (для звукового ландшафта). */
+  function partIdFor(id) {
+    for (var i = 0; i < PARTS.length; i++) {
+      if (PARTS[i].chapters.indexOf(id) >= 0) return PARTS[i].reference ? 'reference' : PARTS[i].id;
+    }
+    return 'ostrov';
+  }
+
+  /**
    * Куда попадает каждая часть. Справочные главы стоят в своих разделах:
    * сезонная карта — рядом с календарём, заключение и реестр источников —
    * в разделе источников. Так у каждой главы есть живой якорь, а не ссылка
@@ -1257,40 +1283,50 @@
 
   /* ——— Звук ——— */
 
+  /**
+   * Атмосфера: кнопка в верхней панели включает ландшафт текущего раздела
+   * (манифест content/soundscape.json). Доступность дорожек выясняется
+   * асинхронно: пока файлов нет, кнопка честно заблокирована и подписана
+   * «Звук готовится» — книга не обещает звук, которого не существует.
+   */
   function setupSound() {
     if (!window.BookAudio) return;
     var btn = $('btn-sound');
     var label = $('sound-label');
     if (!btn) return;
 
-    // Доступность дорожек выясняется асинхронно: кнопка включает или честно
-    // сообщает, что звук ещё не готов.
-    window.BookAudio.init({
-      scene: els.scene,
-      onChange: function (ok) {
-        if (ok) {
-          btn.disabled = false;
-          btn.title = 'Звук природы';
-          if (label) label.textContent = 'Звук выкл.';
-          return;
-        }
-        btn.disabled = true;
+    function applyState(st) {
+      btn.disabled = !st.ready;
+      if (!st.ready) {
         btn.setAttribute('aria-pressed', 'false');
         btn.title = 'Звуковые дорожки пока не добавлены в репозиторий (docs/assets/audio/)';
         if (label) label.textContent = 'Звук готовится';
-        var volEl = $('sound-vol');
-        if (volEl) volEl.hidden = true;
-      },
+        var off = $('sound-vol');
+        if (off) off.hidden = true;
+        return;
+      }
+      btn.title = 'Атмосфера: звуковой ландшафт раздела';
+      btn.setAttribute('aria-pressed', st.on ? 'true' : 'false');
+      if (label) label.textContent = st.on ? 'Атмосфера вкл.' : 'Атмосфера выкл.';
+      var volEl = $('sound-vol');
+      if (volEl) volEl.hidden = !st.on;
+      var range = $('volume');
+      if (range && document.activeElement !== range) {
+        range.value = String(Math.round(st.volume * 100));
+      }
+    }
+
+    window.BookAudio.init({
+      manifestUrl: (window.BOOK_CONFIG && window.BOOK_CONFIG.soundscapeUrl) || 'content/soundscape.json',
     });
+    window.BookAudio.subscribe(applyState);
 
     btn.addEventListener('click', function () {
       if (btn.disabled) return;
       var on = window.BookAudio.toggle();
-      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      if (label) label.textContent = on ? 'Звук вкл.' : 'Звук выкл.';
-      var volEl = $('sound-vol');
-      if (volEl) volEl.hidden = !on;
-      announce(on ? 'Звук природы включён. Среды меняются вместе с прокруткой.' : 'Звук выключен.');
+      announce(on
+        ? 'Атмосфера включена: ландшафт раздела меняется плавно, вместе с переходами между главами.'
+        : 'Атмосфера выключена.');
     });
 
     var vol = $('sound-vol');
@@ -1400,6 +1436,8 @@
     doc.querySelectorAll('main .part').forEach(function (p) {
       p.classList.toggle('is-current-part', p.contains(art));
     });
+    // Ландшафт раздела меняется плавно, вместе со страницей главы.
+    if (window.BookAudio) window.BookAudio.setPart(partIdFor(id));
     window.scrollTo(0, 0);
     updateReadout();
   }
@@ -1413,6 +1451,7 @@
     doc.querySelectorAll('main .part.is-current-part').forEach(function (p) {
       p.classList.remove('is-current-part');
     });
+    if (window.BookAudio) window.BookAudio.setPart('ostrov');
     if (raw && raw !== 'top') {
       var target = doc.getElementById(raw);
       if (target) { scrollToEl(target, false); return; }
@@ -1505,7 +1544,6 @@
     setupAnchors();
     wireNote();
     setupDonate();
-    wirePlayers();
     window.addEventListener('popstate', route);
 
     Promise.all([
@@ -1522,6 +1560,7 @@
         state.seasons = res[1];
         state.scenes = (res[2] && res[2].scenes) || null;
         state.narration = res[3] || null;
+        if (window.BookVoice) window.BookVoice.setManifest(state.narration);
         (state.book.chapters || []).forEach(function (ch) {
           state.chapters[ch.id] = ch;
           if (ch.story || ch.practical) ch.__prepared = true;
@@ -1536,6 +1575,8 @@
         renderSeason();
         setupScene();
         setupSound();
+        // Постоянный плеер: порядок глав — как в «Содержании».
+        if (window.BookVoice) window.BookVoice.wire({ order: readingOrder() });
 
         var meta = state.book.meta || {};
         els.footLine.textContent = (meta.title || 'Книга') +

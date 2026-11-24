@@ -5,13 +5,19 @@
    ========================================================================== */
 
 /*
- * Шрифты — официальные подмножества Cormorant Garamond, Spectral и Inter
+ * Шрифты — официальные подмножества IBM Plex Mono и Cormorant Garamond
  * (SIL OFL, см. OFL-*.txt), склеенные в один файл на начертание.
+ *
+ * Типографская система книги — «печатная машинка на натуральной бумаге»:
+ * IBM Plex Mono (машинописный набор: текст, подписи, служебные метки,
+ * интерфейс) и Cormorant Garamond (крупные заголовки — контраст печатного
+ * издания). Каждый файл несёт полный набор: кириллица, латиница
+ * (латинские названия видов), цифры, «ёлочки», тире.
  *
  * Важно: в исходных файлах, которые лежали здесь раньше, была кириллица,
  * но не было цифр, латиницы и типографских знаков — книга набиралась
- * вперемешку двумя гарнитурами. Теперь каждый файл несёт полный набор:
- * кириллица, латиница (латинские названия видов), цифры, «ёлочки», тире.
+ * вперемешку двумя гарнитурами. Теперь сборка (tools/build-fonts.py)
+ * склеивает latin + cyrillic на начертание.
  */
 
 @font-face {
@@ -43,51 +49,30 @@
   font-display: swap;
 }
 @font-face {
-  font-family: "Spectral";
-  src: url("../fonts/spectral-300.woff2") format("woff2");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Spectral";
-  src: url("../fonts/spectral-400.woff2") format("woff2");
+  font-family: "Plex Mono";
+  src: url("../fonts/plex-mono-400.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "Spectral";
-  src: url("../fonts/spectral-400-italic.woff2") format("woff2");
+  font-family: "Plex Mono";
+  src: url("../fonts/plex-mono-400-italic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: "Inter";
-  src: url("../fonts/inter-400.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Inter";
-  src: url("../fonts/inter-500.woff2") format("woff2");
+  font-family: "Plex Mono";
+  src: url("../fonts/plex-mono-500.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "Inter";
-  src: url("../fonts/inter-600.woff2") format("woff2");
+  font-family: "Plex Mono";
+  src: url("../fonts/plex-mono-600.woff2") format("woff2");
   font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Inter";
-  src: url("../fonts/inter-700.woff2") format("woff2");
-  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -122,14 +107,15 @@
   --note-bg: #f3ead3;
   --marker: #eee0c0;
 
-  --serif: "Spectral", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  /* Машинописный набор — основной текст и весь служебный слой. */
+  --text: "Plex Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
   --display: "Cormorant", "Iowan Old Style", Georgia, serif;
-  --ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ui: var(--text);
 
   --bar-h: 60px;
   --gutter: clamp(20px, 5vw, 76px);
-  /* 30em (≈ 660 px) — строка книги на ~68–72 знака: строка не «расползается»,
-     но и не рвётся на каждой фразе. */
+  /* 30em — строка книги: у моноширинного набора это ~50 знаков,
+     комфортная строка для длинного чтения без «расползания». */
   --measure: 30em;
   --ease: cubic-bezier(.22, .61, .36, 1);
 
@@ -137,7 +123,7 @@
      Все отступы между ними — по этой же сетке, а не «на глаз». */
   --fs-kicker: 10px;
   --fs-ui: 11px;
-  --fs-caption: 14px;
+  --fs-caption: 13px;
   --fs-body: 18px;
   --lh-display: 1.02;
   --lh-body: 1.72;
@@ -152,8 +138,9 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  /* Типографика: оптический размер, старые цифры в тексте,
-     табличные — только в служебных подписях (см. ниже). */
+  /* Типографика: оптический размер — для заголовочной гарнитуры;
+     цифры машинописного набора прямые, табличные — в служебных подписях
+     (см. .chapter__num и др.). */
   font-optical-sizing: auto;
 }
 
@@ -163,12 +150,13 @@ body {
   background-color: var(--paper);
   background-image: url("../art/paper.webp");
   background-size: 900px 900px;
-  font-family: var(--serif);
+  font-family: var(--text);
   font-size: var(--fs-body);
   line-height: var(--lh-body);
-  /* Книжный набор: лигатуры и кернинг, старые (строчные) цифры в тексте —
-     как в бумажной книге. В интерфейсе цифры табличные, см. .chapter__num и др. */
-  font-feature-settings: "liga" 1, "kern" 1, "onum" 1;
+  /* Машинописный набор: кернинг и лигатуры — там, где они есть;
+     цифры прямые, как у печатной машинки (в служебных подписях — табличные,
+     см. .chapter__num и др.). */
+  font-feature-settings: "liga" 1, "kern" 1;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
@@ -188,13 +176,19 @@ a:hover { color: var(--clay); }
 
 /* Латинские названия видов — курсивом Cormorant, как в референсе
    («Monstera deliciosa» над «Swiss Cheese Plant»): подпись над заголовком,
-   а не мелкий шрифт внутри строки. В тексте книги они идут через <em>,
-   здесь — тот же характер, но display-гарнитурой. */
-.latin, .chapter__body em, .chapter__fig figcaption em {
+   а не мелкий шрифт внутри строки. В тексте книги видовые названия идут
+   через <em> — тем же машинописным курсивом, что и абзац: набрано
+   на одной машинке. */
+.latin {
   font-family: var(--display);
   font-style: italic;
   font-size: 1.04em;
   letter-spacing: .01em;
+}
+.chapter__body em,
+.chapter__fig figcaption em {
+  font-family: var(--text);
+  font-style: italic;
 }
 
 :focus-visible {
@@ -684,11 +678,11 @@ body.is-opening { overflow: hidden; }
 }
 .field__input {
   width: 100%;
-  font-family: var(--display);
-  font-size: clamp(24px, 3.2vw, 32px);
-  font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -.01em;
+  font-family: var(--text);
+  font-size: clamp(17px, 2vw, 22px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: .02em;
   color: var(--ink);
   background: transparent;
   border: 0;
@@ -755,11 +749,11 @@ body.is-opening { overflow: hidden; }
 .cal { display: grid; gap: 22px; }
 .season-block { border-top: 1px solid var(--rule); padding-top: 14px; }
 .season-block h3 {
-  font-family: var(--display);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -.01em;
+  font-family: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: .1em;
   margin-bottom: 6px;
   text-wrap: balance;
 }
@@ -898,7 +892,7 @@ body.is-opening { overflow: hidden; }
 .front__title span:nth-child(2) { padding-left: .08em; color: #1d383c; }
 .front__title span:nth-child(3) { padding-left: .02em; }
 
-/* Подзаголовок — курсив Cormorant, а не капс Inter:
+/* Подзаголовок — курсив Cormorant, а не капс:
    голос книги против служебного шрифта. Как подпись под заголовком
    в референсе, только крупнее и с переносом по смыслу. */
 .front__sub {
@@ -1264,11 +1258,10 @@ body.is-opening { overflow: hidden; }
 }
 .chapter__meta {
   margin-top: 14px;
-  font-family: var(--display);
-  font-style: italic;
-  font-size: 15px;
-  line-height: 1.5;
-  letter-spacing: .01em;
+  font-family: var(--text);
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: .06em;
   color: var(--ochre);
 }
 
@@ -1301,11 +1294,10 @@ body.is-opening { overflow: hidden; }
 }
 .chapter__fig figcaption {
   margin-top: 14px;
-  font-family: var(--display);
-  font-style: italic;
+  font-family: var(--text);
   font-size: var(--fs-caption);
-  line-height: 1.55;
-  letter-spacing: .01em;
+  line-height: 1.6;
+  letter-spacing: .02em;
   color: var(--ink-mute);
   border-top: 1px solid var(--rule-soft);
   padding-top: 10px;
@@ -1338,16 +1330,18 @@ body.is-opening { overflow: hidden; }
   color: var(--sea-deep);
 }
 
+/* Подзаголовок главы — машинописный: увеличенное межбуквенное
+   расстояние вместо крупного кегля. Иерархия держится на начертании 600,
+   воздухе сверху и цвете, а не на размере. */
 .chapter__body h3 {
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: clamp(23px, 2.4vw, 32px);
-  line-height: 1.16;
-  letter-spacing: -.012em;
-  margin: 1.9em 0 .55em;
+  font-family: var(--text);
+  font-weight: 600;
+  font-size: 1.06em;
+  line-height: 1.5;
+  letter-spacing: .12em;
+  margin: 2.2em 0 .8em;
   color: #1e373b;
   text-wrap: balance;
-  hanging-punctuation: first last;
 }
 .chapter__body h4 {
   display: flex;
@@ -1372,17 +1366,20 @@ body.is-opening { overflow: hidden; }
 .chapter__body li { margin: .32em 0; padding-left: .15em; }
 .chapter__body li::marker { color: var(--ink-mute); font-variant-numeric: tabular-nums; }
 /* Цитата — display-курсив, крупнее текста: голос автора, а не примечание. */
+/* Полевая заметка — отдельная машинописная запись на полях:
+   тот же моноширинный набор, что и текст, но на своём листке. */
 .chapter__body blockquote {
   margin: 1.6em 0;
-  padding: .15em 0 .15em 1.15em;
-  border-left: 1px solid var(--clay);
+  padding: .8em 1em .8em 1.15em;
+  border: 1px solid var(--rule-soft);
+  border-left: 2px solid var(--clay);
+  background: var(--note-bg);
   color: var(--ink-soft);
-  font-family: var(--display);
-  font-style: italic;
-  font-size: 1.12em;
-  line-height: 1.55;
+  font-family: var(--text);
+  font-size: .93em;
+  line-height: 1.66;
+  letter-spacing: .01em;
   text-wrap: pretty;
-  hanging-punctuation: first last;
 }
 .chapter__body blockquote p:last-child { margin-bottom: 0; }
 .chapter__body hr {
@@ -1748,10 +1745,10 @@ body.is-opening { overflow: hidden; }
 .note-link__d {
   display: block;
   margin-top: 6px;
-  font-family: var(--display);
-  font-size: 16px;
-  line-height: 1.4;
-  font-style: italic;
+  font-family: var(--text);
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: .01em;
   color: var(--ink-soft);
   text-wrap: pretty;
 }
@@ -2231,11 +2228,11 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
   .bar { display: none; }
   .front { padding-top: 5vh; }
   :root { --tabbar-h: 62px; }
-  body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+  body { padding-bottom: calc(var(--tabbar-h) + var(--voicebar-h, 0px) + env(safe-area-inset-bottom, 0px)); }
   .foot { padding-bottom: calc(var(--tabbar-h) + 24px); }
   .scene { height: calc(100vh + 300vh); }
   /* Панели не должны наезжать на бар. */
-  .panel__inner { padding-bottom: calc(34px + var(--tabbar-h)); }
+  .panel__inner { padding-bottom: calc(34px + var(--tabbar-h) + var(--voicebar-h, 0px)); }
   .sheet__foot { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
 
   /* ——— Карточки-тизеры ——— */
@@ -2295,7 +2292,7 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
     hanging-punctuation: first last;
   }
   .teaser__text {
-    font-family: var(--serif);
+    font-family: var(--text);
     font-size: 14.5px;
     line-height: 1.62;
     color: var(--ink-soft);
@@ -2429,7 +2426,7 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
   .teaser--season .teaser__text { color: var(--ink-soft); }
 
   /* Первый блок после сцены не должен «прилипать» к барм. */
-  .part { scroll-margin-top: 0; scroll-margin-bottom: var(--tabbar-h); }
+  .part { scroll-margin-top: 0; scroll-margin-bottom: calc(var(--tabbar-h) + var(--voicebar-h, 0px)); }
 }
 
 @media (min-width: 821px) {
@@ -2442,19 +2439,22 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
 
 .chapter__product {
   margin-top: 10px;
-  font-family: var(--display);
-  font-size: 15px;
-  letter-spacing: .08em;
+  font-family: var(--text);
+  font-size: 12.5px;
+  letter-spacing: .16em;
   text-transform: uppercase;
   color: var(--ink-mute);
 }
 
+/* Сезонное обозначение — машинописная метка: единая система капслока
+   и межбуквенного расстояния со всеми служебными метками книги. */
 .season-mark {
   margin-top: 6px;
-  font-family: var(--display);
-  font-style: italic;
-  font-size: 15.5px;
-  line-height: 1.5;
+  font-family: var(--text);
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: .14em;
+  text-transform: uppercase;
   color: var(--ochre);
 }
 .season-mark a {
@@ -2465,13 +2465,11 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
 .season-mark a:hover { border-bottom-color: var(--ochre); }
 .season-mark__months {
   margin-left: .55em;
-  font-style: normal;
-  font-size: 13px;
-  letter-spacing: .04em;
+  font-size: 11.5px;
+  letter-spacing: .12em;
   color: var(--ink-mute);
 }
 .season-mark--unknown {
-  font-size: 14px;
   color: var(--ink-mute);
 }
 .season-mark--unknown a { border-bottom-color: transparent; }
@@ -2491,10 +2489,10 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
 }
 .scene-fig figcaption {
   margin-top: 10px;
-  font-family: var(--display);
-  font-style: italic;
-  font-size: 14px;
+  font-family: var(--text);
+  font-size: 13px;
   line-height: 1.5;
+  letter-spacing: .02em;
   color: var(--ink-mute);
   text-align: center;
 }
@@ -2571,7 +2569,7 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
     position: fixed;
     left: 0;
     right: 0;
-    bottom: var(--tabbar-h, 58px);
+    bottom: calc(var(--tabbar-h, 58px) + var(--voicebar-h, 0px));
     z-index: 94;
     display: flex;
     align-items: center;
@@ -2591,9 +2589,10 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
     transform-origin: left center;
   }
   .readout__label {
-    font-family: var(--display);
-    font-size: 13px;
-    letter-spacing: .06em;
+    font-family: var(--text);
+    font-size: 12px;
+    letter-spacing: .08em;
+    font-variant-numeric: tabular-nums;
     color: var(--ink-mute);
   }
 }
@@ -2607,54 +2606,290 @@ body.is-travelling .scene__sticky { filter: saturate(1.02); }
   .tabbar, .teasers, .readout { display: none !important; }
 }
 
-/* ——— Озвучка главы: плеер под открытием ——— */
+/* ——— Озвучка: пилюля главы и постоянный плеер ——— */
+
+/* Ползунки книги: тонкая линия, маленький «печатный» бегунок. */
+.player__seek,
+.voicebar__seek,
+.voicebar__pop input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.player__seek::-webkit-slider-runnable-track,
+.voicebar__seek::-webkit-slider-runnable-track,
+.voicebar__pop input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  background: rgba(34, 49, 52, 0.18);
+  border-radius: 2px;
+}
+.player__seek::-moz-range-track,
+.voicebar__seek::-moz-range-track,
+.voicebar__pop input[type="range"]::-moz-range-track {
+  height: 3px;
+  background: rgba(34, 49, 52, 0.18);
+  border-radius: 2px;
+}
+.player__seek::-webkit-slider-thumb,
+.voicebar__seek::-webkit-slider-thumb,
+.voicebar__pop input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 1px solid var(--paper);
+}
+.player__seek::-moz-range-thumb,
+.voicebar__seek::-moz-range-thumb,
+.voicebar__pop input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 1px solid var(--paper);
+}
+.player__seek:disabled,
+.voicebar__seek:disabled,
+.voicebar__pop input[type="range"]:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Пилюля под открытием главы: вход в озвучку этой главы. */
 .chapter__player {
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 26rem;
+  max-width: 30rem;
   margin: 1.2rem 0 0.4rem;
-  padding: 0.55rem 0.9rem;
+  padding: 0.5rem 0.9rem;
   border: 1px solid rgba(34, 49, 52, 0.16);
   border-radius: 999px;
   background: var(--paper-lift);
+  font-family: var(--text);
 }
 .player__btn {
   flex: none;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  padding: 0;
   border-radius: 50%;
   border: 1px solid rgba(34, 49, 52, 0.28);
   background: var(--paper);
   color: var(--ink);
-  font-size: 0.95rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 .player__btn:hover { background: var(--paper-deep); }
-.player__bar {
-  flex: 1;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(34, 49, 52, 0.16);
-  cursor: pointer;
+.player__btn.is-playing {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
 }
-.player__fill {
-  height: 100%;
-  width: 0;
-  border-radius: 2px;
-  background: var(--ink-soft);
-}
-.player__count {
+.player__seek { flex: 1; min-width: 56px; }
+.player__time {
   flex: none;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
   color: var(--ink-soft);
   white-space: nowrap;
 }
+.player__count {
+  flex: none;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+/* Постоянный плеер: тонкая полоса у нижнего края. Не перекрывает текст —
+   body получает запас снизу (voicebar-on), на телефоне плеер стоит
+   над нижним баром разделов, в зоне большого пальца. */
+.voicebar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 96;
+  background: rgb(248 243 228 / 94%);
+  border-top: 1px solid rgb(221 210 182 / 70%);
+  backdrop-filter: blur(14px) saturate(1.06);
+  font-family: var(--text);
+}
+.voicebar[hidden] { display: none; }
+body.voicebar-on { --voicebar-h: 46px; padding-bottom: var(--voicebar-h); }
+.voicebar__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(10px, 2vw, 18px);
+}
+.voicebar__btn {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+.voicebar__btn:hover { background: var(--paper-deep); }
+.voicebar__btn:disabled { opacity: 0.35; cursor: default; }
+.voicebar__btn--play {
+  width: 38px;
+  height: 38px;
+  border-color: rgba(34, 49, 52, 0.3);
+  background: var(--paper);
+}
+.voicebar__btn--play.is-playing {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.voicebar__rate {
+  width: auto;
+  min-width: 42px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border-color: var(--rule);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.voicebar__mid {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.voicebar__title {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.voicebar__line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.voicebar__seek { flex: 1; min-width: 60px; }
+.voicebar__time {
+  flex: none;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+.voicebar__pop {
+  position: absolute;
+  right: clamp(10px, 2vw, 18px);
+  bottom: calc(100% + 10px);
+  width: min(320px, calc(100vw - 24px));
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--paper-lift);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px -30px rgb(30 40 40 / 70%);
+}
+.voicebar__pop[hidden] { display: none; }
+.voicebar__slider,
+.voicebar__amb {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.voicebar__amb { grid-template-columns: 84px auto 1fr; }
+.voicebar__toggle,
+.voicebar__sync {
+  font-family: var(--text);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.voicebar__toggle[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.voicebar__toggle:disabled { opacity: 0.45; cursor: default; }
+.voicebar__sync {
+  justify-self: start;
+  border-style: dashed;
+  background: none;
+}
+.voicebar__sync.is-on {
+  border-style: solid;
+  border-color: var(--ochre);
+  color: var(--clay);
+}
+.voicebar__hint {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--ink-mute);
+}
+@media (max-width: 820px) {
+  body.voicebar-on { --voicebar-h: 52px; }
+  .voicebar { bottom: calc(var(--tabbar-h, 62px) + env(safe-area-inset-bottom, 0px)); }
+  .voicebar__row { height: 52px; gap: 4px; padding: 0 8px; }
+  .voicebar__btn { width: 36px; height: 36px; }
+  .voicebar__title { font-size: 10px; letter-spacing: 0.07em; }
+  .voicebar__time { font-size: 10.5px; }
+  .voicebar__pop { right: 8px; left: 8px; width: auto; }
+}
+
+/* Подсветка читаемого под голос абзаца — по желанию, мягко, без автопрокрутки. */
+.chapter__body > p.is-audible {
+  background: linear-gradient(90deg, rgb(169 127 77 / 15%) 0%, rgb(169 127 77 / 0%) 82%);
+  box-shadow: inset 2px 0 0 var(--ochre);
+  transition: background 0.5s var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter__body > p.is-audible { transition: none; }
+}
 @media print {
-  .chapter__player { display: none; }
+  .chapter__player,
+  .voicebar { display: none !important; }
 }
 
 /* ——— Страницы глав: одна глава — одна страница ——— */

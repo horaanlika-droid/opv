@@ -11,10 +11,16 @@
 «ёлочки», тире, многоточие, стрелки, знак номера.
 Хвост Vietnamese/Greek выброшен: он утяжеляет файлы на 30–40 % без пользы.
 
+Гарнитуры книги (типографская система «печатной машинки»):
+    - IBM Plex Mono — машинописный набор: текст, подписи, служебные
+      метки, интерфейс. Кириллица, латиница, цифры, «ёлочки», тире.
+    - Cormorant Garamond — крупные заголовки: контраст печатного
+      издания к машинописному тексту.
+
 Запуск:
     pip install --break-system-packages fonttools brotli
     npm install --no-save --prefix /tmp/fonts @fontsource/cormorant-garamond \
-        @fontsource/spectral @fontsource/inter
+        @fontsource/ibm-plex-mono
     python3 tools/build-fonts.py [--src /tmp/fonts/node_modules/@fontsource]
 
 Лицензии начертаний — SIL OFL, тексты лежат рядом: docs/assets/fonts/OFL-*.txt.
@@ -46,17 +52,16 @@ UNICODES = (
 )
 
 JOBS = [
+    # Заголовки — контраст печатного издания.
     ('cormorant-garamond', '400', 'normal', 'cormorant-400.woff2'),
     ('cormorant-garamond', '500', 'normal', 'cormorant-500.woff2'),
     ('cormorant-garamond', '500', 'italic', 'cormorant-500-italic.woff2'),
     ('cormorant-garamond', '600', 'normal', 'cormorant-600.woff2'),
-    ('spectral', '300', 'normal', 'spectral-300.woff2'),
-    ('spectral', '400', 'normal', 'spectral-400.woff2'),
-    ('spectral', '400', 'italic', 'spectral-400-italic.woff2'),
-    ('inter', '400', 'normal', 'inter-400.woff2'),
-    ('inter', '500', 'normal', 'inter-500.woff2'),
-    ('inter', '600', 'normal', 'inter-600.woff2'),
-    ('inter', '700', 'normal', 'inter-700.woff2'),
+    # Машинописный набор: текст, подписи, служебные метки, интерфейс.
+    ('ibm-plex-mono', '400', 'normal', 'plex-mono-400.woff2'),
+    ('ibm-plex-mono', '400', 'italic', 'plex-mono-400-italic.woff2'),
+    ('ibm-plex-mono', '500', 'normal', 'plex-mono-500.woff2'),
+    ('ibm-plex-mono', '600', 'normal', 'plex-mono-600.woff2'),
 ]
 
 MERGE = """
