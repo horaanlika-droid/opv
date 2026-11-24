@@ -309,7 +309,7 @@
     var fig = ch.illustration
       ? '<figure class="chapter__fig"><img src="assets/illustrations/' + esc(ch.illustration) +
         '" alt="Иллюстрация к главе «' + esc(ch.title) + '»" loading="lazy" decoding="async" width="1000" height="750">' +
-        '<figcaption>Иллюстрация к главе «' + esc(ch.title) + '». Акварель и тушь.</figcaption></figure>'
+        '<figcaption>Иллюстрация к главе «' + esc(ch.title) + '». Выцветшая акварель.</figcaption></figure>'
       : '';
 
     // Открытие главы по макету мобильной книги: номер, заголовок, авторский
@@ -345,6 +345,7 @@
           noteLinkHtml(ch) +
         '</header>' +
         opener +
+        playerFor(ch) +
         '<div class="chapter__layout">' +
           fig +
           '<div class="chapter__body">' + window.MD.render(story) + '</div>' +
@@ -392,6 +393,14 @@
       '</figure>' +
       quote +
       '</div>';
+  }
+
+  /** Манифест озвучки: content/narration.json. Нет манифеста — нет плеера. */
+  function loadNarration() {
+    var url = (window.BOOK_CONFIG && window.BOOK_CONFIG.narrationUrl) || 'content/narration.json';
+    return fetch(url, { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
   }
 
   /**
@@ -1446,6 +1455,7 @@
     setupAnchors();
     wireNote();
     setupDonate();
+    wirePlayers();
 
     Promise.all([
       fetch('content/book.json', { cache: 'no-cache' }).then(function (r) {
@@ -1454,11 +1464,13 @@
       }),
       loadSeasons(),
       loadScenes(),
+      loadNarration(),
     ])
       .then(function (res) {
         state.book = res[0];
         state.seasons = res[1];
         state.scenes = (res[2] && res[2].scenes) || null;
+        state.narration = res[3] || null;
         (state.book.chapters || []).forEach(function (ch) {
           state.chapters[ch.id] = ch;
           if (ch.story || ch.practical) ch.__prepared = true;

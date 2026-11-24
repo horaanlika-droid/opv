@@ -189,7 +189,9 @@ test('«Островные сцены»: метаданные полные, ст
       assert.ok(!s.files || !s.files.web, `${s.id}: концепт без готового изображения`);
     }
   }
-  const ready = manifest.scenes.filter((s) => s.files && s.files.web && s.place.mode !== 'opener').length;
+  const ready = manifest.scenes.filter(
+    (s) => s.kind === 'byt' && s.place.mode !== 'opener' && s.files && s.files.web,
+  ).length;
   assert.equal(ready, 12, 'все двенадцать бытовых сцен раскадровки в книге');
 });
 

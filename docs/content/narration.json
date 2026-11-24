@@ -1,0 +1,29 @@
+{
+  "voice": "voice-00",
+  "note": "Голос временный (авто-кастинг); темп 0,8×. Список фрагментов растёт по мере озвучки глав.",
+  "audioDir": "assets/audio/narration",
+  "chapters": [
+    {
+      "id": "filosofiya",
+      "title": "Философия",
+      "clips": [
+        "filosofiya-01.mp3",
+        "filosofiya-02.mp3",
+        "filosofiya-03a.mp3",
+        "filosofiya-03b.mp3",
+        "filosofiya-04.mp3",
+        "filosofiya-05.mp3",
+        "filosofiya-06a.mp3",
+        "filosofiya-06b.mp3",
+        "filosofiya-07.mp3"
+      ]
+    },
+    {
+      "id": "kuhnya-kotoruyu-sformirovali-more-les-i-vremya",
+      "title": "Кухня, которую сформировали море, лес и время",
+      "clips": [
+        "kuhnya-01.mp3"
+      ]
+    }
+  ]
+}
